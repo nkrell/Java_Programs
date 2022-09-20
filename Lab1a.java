@@ -2,7 +2,7 @@ package scratch;
 
 import java.util.Random;
 
-class Lab1
+class Lab1a
 {
 	public static void main(String[] args)
 	{
