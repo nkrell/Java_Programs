@@ -37,9 +37,13 @@ public class Lab3
 		{
 			throw new Exception("Error: Weights cannot sum up to greater than 1")
 		}
-
+		//Create Random
+		Random rand = new Raandom();
 		//Return a random string of characters sampled with replacement from alphabet[]
-		
+		for (int i = 0; i < length; i++) 
+		{
+			
+		}
 
 		return null;
 	}
