@@ -31,8 +31,16 @@ public class Lab3
 		float sum = 0;
 		for (int i = 0; i < weights.size(); i++ ) 
 		{
-			
+			sum = sum + weights[i];
 		}
+		if (sum > 1)
+		{
+			throw new Exception("Error: Weights cannot sum up to greater than 1")
+		}
+
+		//Return a random string of characters sampled with replacement from alphabet[]
+		
+
 		return null;
 	}
 	
