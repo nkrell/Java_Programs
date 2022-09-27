@@ -1,4 +1,7 @@
 package classExamples;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 //check to see that alphabet and weights have the same length
 //check to see that length >= 0
 //check to see that the sum of weights is within round-off error of 1
@@ -14,14 +17,14 @@ public class Lab3
 	throws Exception
 	{
 		//check to see that alphabet and weights have the same length
-		if (alphabet.size() != weights.size())
+		if (alphabet.length != weights.length)
 		{
 			throw new Exception("Error: Alphabet list and Weights list must have the same length");
 		}
 
 		//check to see that the length >= 0
 		// only need to check alphabet since we know they are equal at this point
-		if (alphabet.size == 0)
+		if (alphabet.length == 0)
 		{
 			throw new Exception("Error: Lists cannot have a length of zero");
 		}
@@ -29,23 +32,38 @@ public class Lab3
 		//check to see that the sum of weights is within round-off error of 1
 		// make variable to hold total
 		float sum = 0;
-		for (int i = 0; i < weights.size(); i++ ) 
+		//make list to hold increasing sums
+		List<Float> sumsList = new ArrayList<Float> ();
+
+		for (int i = 0; i < weights.length; i++ ) 
 		{
 			sum = sum + weights[i];
+			sumsList.add(sum);
 		}
 		if (sum > 1)
 		{
-			throw new Exception("Error: Weights cannot sum up to greater than 1")
+			throw new Exception("Error: Weights cannot sum up to greater than 1");
 		}
 		//Create Random
-		Random rand = new Raandom();
+		Random rand = new Random();
+		//create var to hold the random output
+		float randPick = 0;
+		//create a variable to hold the growing sequence
+		String sequence = "";
 		//Return a random string of characters sampled with replacement from alphabet[]
 		for (int i = 0; i < length; i++) 
 		{
-			
+			randPick = rand.nextFloat();
+			for (int j = 0; j < sumsList.size(); j++)
+			{
+				if (randPick >= sumsList.get(j))
+				{
+					sequence = sequence + alphabet[j];
+				}
+			}
 		}
 
-		return null;
+		return(sequence);
 	}
 	
 	
