@@ -2,7 +2,13 @@ package classExamples;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
+import java.util.HashSet;
+import java.util.Set;
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.TreeMap;
+import java.util.Map;
 public class midterm
 {
 	public static int numGCs(String parameter)
@@ -46,36 +52,54 @@ public class midterm
        		b[countUp] = a[i];
        		countUp++;
        	}
-       	
        	for (int i = 0; i < b.length; i++)
        	{
        		System.out.println(b[i]);
        	}
-
-
  	}
 
-
-
-
-
-
-
-
-
-
-	public static void main(String[] args)
+ 	/*Returns a List containing all the Integers in inList that are even.  The order of Integers in the return List is the same as in inList*/
+	public static List<Integer> getEvenNumbers( List<Integer> inList )
 	{
-		long startTime = System.currentTimeMillis();
-        StringBuffer buffer = new StringBuffer();	
-        for( int x=0; x < 10000; x++)
-        	buffer.append(x);
-        String s = buffer.toString();
-		float numSeconds = (System.currentTimeMillis() - startTime) / 1000f;
-        System.out.println( numSeconds + " seconds"  );
-        //System.out.println(s);
-        float fArray[] = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f};
-        reverseArray(fArray);
+		List<Integer> evenNumbers = new ArrayList<Integer>();
+		for (int i = 0; i < inList.size(); i++)
+		{
+			if (inList.get(i) % 2 == 0)
+			{
+				evenNumbers.add(inList.get(i));
+			}
+		}
+		return(evenNumbers);
+	}
+    	
+	public int aMethod(int anInt)
+	{
+		return anInt;
+	}
+
+
+
+
+
+
+
+
+
+	public static void main(String[] args) throws Exception
+	{
+		String s = "Here is a string";
+		Map<Character, Integer> map = new TreeMap<Character, Integer>();
+		for (char c : s.toCharArray())
+		{
+			//int val = map.get(c);
+			val++;
+			map.put(c, val);
+		}
+
+		for (Character c : map.keySet())
+		{
+			System.out.println(c + " " + map.get(c));
+		}
 	}
 
 
