@@ -21,16 +21,36 @@ public class FastaSequence
 	}
 	public String getHeader()
 	{
-
+		return this.header;
 	}
 
 	public String getSequence()
 	{
-
+		return this.sequence;
 	}
 
 	public float getGCRation()
 	{
+		int counter;
+
+		for (char base : sequence.toCharArray())
+		{
+			if ((base == 'G')||(base == 'C'))
+			{
+				counter++;
+			}
+		}
+		return(Float(counter/sequence.length()));
+	}
+
+	public static List<FastaSequence> readFastaFile(String filepath) throws Exception
+	{
 
 	}
+
+	//public static void writeTableSummary( List<FastaSequence> list, File outputFile) throws Exception
+	//{
+
+	//}
+
 }
