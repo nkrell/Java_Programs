@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.io.*;
+import java.util.Scanner;
 import java.util.List;
 import java.util.Random;
 import java.util.HashSet;
@@ -29,12 +31,19 @@ public class FastaSequence
 
 	public String getSequence()
 	{
-		return this.sequence;
+		String tempString = sequence.toString();
+		return(tempString);
 	}
 
-	public float getGCRation()
+	@Override
+	public String toString()
 	{
-		int counter;
+		return(this.header + "\n" + this.sequence + "\n");
+	}
+
+	public float getGCRatio()
+	{
+		int counter = 0;
 
 		for (char base : sequence.toCharArray())
 		{
@@ -43,14 +52,36 @@ public class FastaSequence
 				counter++;
 			}
 		}
-		return(Float(counter/sequence.length()));
+		float counterF = counter;
+		float lengthF = sequence.toString().length();
+		return(counterF/lengthF);
 	}
 
-	public static List<FastaSequence> readFastaFile(File file) throws Exception
+	public static List<FastaSequence> readFastaFile(String filename) throws Exception
 	{
+		//Set up variables needed for parsing
+		BufferedReader reader = new BufferedReader(new FileReader(new File(filename)));
 		List<FastaSequence> list = new ArrayList<FastaSequence>();
-		BufferedReader reader = new BufferedReader(new FileReader(file));
 		String nextLine = reader.readLine();
+		//temp var to speed up string concatenation
+		StringBuffer buffer = new StringBuffer();
+		while (nextLine != null)
+		{
+			FastaSequence fs = new FastaSequence("", "");
+			list.add(fs);
+			fs.header = nextLine;
+			nextLine = reader.readLine();
+
+			while ((nextLine != null) && (!nextLine.startsWith(">")))
+			{
+				//fs.sequence.append(nextLine);
+				buffer.append(nextLine);
+				nextLine = reader.readLine();
+			}
+			fs.sequence = buffer.toString();
+			buffer.setLength(0);
+		}
+		reader.close();
 		return(list);
 	}
 
@@ -59,32 +90,18 @@ public class FastaSequence
 
 	//}
 
-}
-//ExaMPLE
-import java.io.*;
-import java.util.Scanner;
+	public static void main(String[] args) throws Exception
+	{
+		List<FastaSequence> fastaList = FastaSequence.readFastaFile("Testing.fasta");
+		for( FastaSequence fs : fastaList)
+		{
+			System.out.println(fs.getHeader());
+        	System.out.println(fs.getSequence());
+        	System.out.println(fs.getGCRatio());
+		}
+		File myFile = new File("c:\\yourFilePathHere\\out.txt");
+		//writeTableSummary( fastaList,  myFile);
+	}
 
-public class ReadFastaFile {
-
-    public static void main(String[] args) throws FileNotFoundException {
-
-        boolean first = true;
-
-        try (Scanner sc = new Scanner(new File("test.fasta"))) {
-            while (sc.hasNextLine()) {
-                String line = sc.nextLine().trim();
-                if (line.charAt(0) == '>') {
-                    if (first)
-                        first = false;
-                    else
-                        System.out.println();
-                    System.out.printf("%s: ", line.substring(1));
-                } else {
-                    System.out.print(line);
-                }
-            }
-        }
-        System.out.println();
-    }
 
 }

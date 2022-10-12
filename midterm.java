@@ -52,10 +52,11 @@ public class midterm
        		b[countUp] = a[i];
        		countUp++;
        	}
-       	for (int i = 0; i < b.length; i++)
-       	{
-       		System.out.println(b[i]);
-       	}
+       	//for (int i = 0; i < b.length; i++)
+       	//{
+       	//	System.out.println(b[i]);
+       	//}
+       	a = b;
  	}
 
  	/*Returns a List containing all the Integers in inList that are even.  The order of Integers in the return List is the same as in inList*/
@@ -87,18 +88,12 @@ public class midterm
 
 	public static void main(String[] args) throws Exception
 	{
-		String s = "Here is a string";
-		Map<Character, Integer> map = new TreeMap<Character, Integer>();
-		for (char c : s.toCharArray())
+		float[] array = {1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f ,7.0f, 8.0f};
+		
+		reverseArray(array);
+		for (float c : array)
 		{
-			//int val = map.get(c);
-			val++;
-			map.put(c, val);
-		}
-
-		for (Character c : map.keySet())
-		{
-			System.out.println(c + " " + map.get(c));
+			System.out.println(c);
 		}
 	}
 
