@@ -102,9 +102,18 @@ public class FastaSequence
 	public static void writeTableSummary( List<FastaSequence> list, File outputFile) throws Exception
 	{
 		BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+		//so i dont have to type "\t" so often
+		String tab = "\t";
+		//write header
+		writer.write("Sequence ID" + tab + "numA" + tab + "numC" + tab + "numG" + tab + "numT" + "\n" );
 		for (FastaSequence fs : list)
 		{
-			writer.write(fs.getHeader() + );
+			writer.write(fs.getHeader() + tab);
+			writer.write(fs.countBase('A') + tab);
+			writer.write(fs.countBase('C') + tab);
+			writer.write(fs.countBase('G') + tab);
+			writer.write(fs.countBase('T') + tab);
+			writer.write(fs.getSequence() + "\n");
 		}
 	}
 
@@ -117,8 +126,8 @@ public class FastaSequence
         	System.out.println(fs.getSequence());
         	System.out.println(fs.getGCRatio());
 		}
-		File myFile = new File("Testing_Output.fasta");
-		//writeTableSummary( fastaList,  myFile);
+		File myFile = new File("Testing_Output.txt");
+		writeTableSummary( fastaList,  myFile);
 	}
 
 
