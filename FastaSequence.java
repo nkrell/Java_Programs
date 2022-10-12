@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.TreeMap;
 import java.util.Map;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -57,6 +58,19 @@ public class FastaSequence
 		return(counterF/lengthF);
 	}
 
+	public int countBase(char queryBase)
+	{
+		int counter = 0;
+		for (char base : sequence.toCharArray())
+		{
+			if (base == queryBase)
+			{
+				counter++;
+			}
+		}
+		return(counter);
+	}
+
 	public static List<FastaSequence> readFastaFile(String filename) throws Exception
 	{
 		//Set up variables needed for parsing
@@ -85,10 +99,14 @@ public class FastaSequence
 		return(list);
 	}
 
-	//public static void writeTableSummary( List<FastaSequence> list, File outputFile) throws Exception
-	//{
-
-	//}
+	public static void writeTableSummary( List<FastaSequence> list, File outputFile) throws Exception
+	{
+		BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+		for (FastaSequence fs : list)
+		{
+			writer.write(fs.getHeader() + );
+		}
+	}
 
 	public static void main(String[] args) throws Exception
 	{
@@ -99,7 +117,7 @@ public class FastaSequence
         	System.out.println(fs.getSequence());
         	System.out.println(fs.getGCRatio());
 		}
-		File myFile = new File("c:\\yourFilePathHere\\out.txt");
+		File myFile = new File("Testing_Output.fasta");
 		//writeTableSummary( fastaList,  myFile);
 	}
 
