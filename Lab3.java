@@ -1,3 +1,4 @@
+
 package classExamples;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +24,9 @@ public class Lab3
 		}
 
 		//check to see that the length >= 0
-		// only need to check alphabet since we know they are equal at this point
-		if (alphabet.length == 0)
+		if (length <= 0)
 		{
-			throw new Exception("Error: Lists cannot have a length of zero");
+			throw new Exception("Error: Length must be greater than zero");
 		}
 
 		//check to see that the sum of weights is within round-off error of 1
@@ -38,11 +38,13 @@ public class Lab3
 		for (int i = 0; i < weights.length; i++ ) 
 		{
 			sum = sum + weights[i];
+			System.out.println(sum);
 			sumsList.add(sum);
+
 		}
-		if (sum > 1)
+		if ((sum > 1.01f) || (sum < 0.99f))
 		{
-			throw new Exception("Error: Weights cannot sum up to greater than 1");
+			throw new Exception("Error: Weights must be within roundoff error of 1");
 		}
 		//Create Random
 		Random rand = new Random();
@@ -56,9 +58,10 @@ public class Lab3
 			randPick = rand.nextFloat();
 			for (int j = 0; j < sumsList.size(); j++)
 			{
-				if (randPick >= sumsList.get(j))
+				if (randPick <= sumsList.get(j))
 				{
 					sequence = sequence + alphabet[j];
+					break;
 				}
 			}
 		}
@@ -73,7 +76,9 @@ public class Lab3
 		char[] dnaChars = { 'A', 'C', 'G', 'T'  };
 		
 		// a random DNA 30 mer
-		System.out.println(generateRandomSequence(dnaChars, dnaWeights,30));
+		String mer = generateRandomSequence(dnaChars, dnaWeights,30);
+		System.out.println(mer);
+		System.out.println(mer.length());
 		
 		// background rate of residues from https://www.science.org/doi/abs/10.1126/science.286.5438.295
 		float proteinBackground[] =
@@ -87,8 +92,9 @@ public class Lab3
 		char[] proteinResidues = 
 				new char[] { 'A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T',
 							 'V', 'W', 'Y' };
-
 		// a random protein with 30 residues
-		System.out.println(generateRandomSequence(proteinResidues, proteinBackground, 30));
+		String prot = generateRandomSequence(proteinResidues, proteinBackground, 30);
+		System.out.println(prot);
+		System.out.println(prot.length());
 	}
 }
