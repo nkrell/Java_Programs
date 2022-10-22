@@ -55,7 +55,12 @@ public class Lab3
 		//Return a random string of characters sampled with replacement from alphabet[]
 		for (int i = 0; i < length; i++) 
 		{
-			randPick = rand.nextFloat();
+			//check to see if randPick will fit into the weights list, as it can fall outside the .99 - 1.01 range
+			do
+			{
+				randPick = rand.nextFloat();
+			}
+			while (randPick > sum);
 			for (int j = 0; j < sumsList.size(); j++)
 			{
 				if (randPick <= sumsList.get(j))
@@ -65,7 +70,6 @@ public class Lab3
 				}
 			}
 		}
-
 		return(sequence);
 	}
 	
