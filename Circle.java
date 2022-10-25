@@ -28,10 +28,6 @@ public class Circle{	private double radius;
 		set.add(c2);
 		System.out.println(set.size());
 		
-		int dollar = 100;
-		int numDimes = 9;
-		int dime = 10;
-		System.out.println(dollar - numDimes*dime);
-		System.out.println("Cents");
+		
 	}
 }
