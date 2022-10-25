@@ -24,9 +24,9 @@ public class Lab3
 
 		//check to see that the length >= 0
 		// only need to check alphabet since we know they are equal at this point
-		if (alphabet.length == 0)
+		if (length <= 0)
 		{
-			throw new Exception("Error: Lists cannot have a length of zero");
+			throw new Exception("Error: Length must be greater than zero");
 		}
 
 		//check to see that the sum of weights is within round-off error of 1
@@ -51,8 +51,11 @@ public class Lab3
 		//create a variable to hold the growing sequence
 		String sequence = "";
 		//Return a random string of characters sampled with replacement from alphabet[]
+		int counter = 0; //<------- Remove after debugging
 		for (int i = 0; i < length; i++) 
 		{
+			System.out.println(counter);
+			counter++;
 			randPick = rand.nextFloat();
 			for (int j = 0; j < sumsList.size(); j++)
 			{
