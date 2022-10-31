@@ -12,6 +12,7 @@ public class Lab5
 	{
 		JFrame aaQuiz = new JFrame("Amino Acid Quiz");
 		aaQuiz.setSize(200,200);
+		aaQuiz.setVisible(true);
 
 	
 		String startString = "";

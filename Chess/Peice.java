@@ -12,7 +12,7 @@ public abstract class LinearPeice
 	public String color;
 
 	//constructor
-	public Peice(int xPos, int yPos, int rayNumber, String type, String color)
+	public LinearPeice(int xPos, int yPos, int rayNumber, String type, String color)
 	{
 		this.xPos = xPos;
 		this.yPos = yPos;

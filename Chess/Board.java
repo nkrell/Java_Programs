@@ -3,7 +3,7 @@ import Chess.Peice;
 
 public class Board
 {
-	public Peice[][] gameBoard = new Peice[7][7];
+	public Peice[][] gameBoard = new Peice[8][8];
 
 	public Board()
 	{
