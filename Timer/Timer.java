@@ -1,4 +1,5 @@
 package Timer;
+//import Timer.Lab5;
 
 public class Timer implements Runnable
 {
@@ -33,7 +34,8 @@ public class Timer implements Runnable
 	{
 		while (!(isTimeUp()))
 		{
-			System.out.println(currentTime()); 
+			System.out.println(currentTime());
+			//window.aaTimeUpdate(currentTime);
 		}
 	}
 }
