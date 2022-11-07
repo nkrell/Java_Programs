@@ -6,14 +6,16 @@ import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import java.awt.event.*; 
+import javax.swing.SwingUtilities;
 
 
 
 public class Amino_Acid_Quiz_II
 {
+	private final FrameSetter frame;
 	public Amino_Acid_Quiz_II()
 	{
-		FrameSetter frame = new FrameSetter();
+		frame = new FrameSetter();
 	}
 
 
@@ -37,14 +39,7 @@ public class Amino_Acid_Quiz_II
 
 		private boolean flip(boolean currentState)
 		{
-			if (currentState == true)
-			{
-				return(false);
-			}
-			else if (currentState == false) 
-			{
-				return(true);
-			}
+			return(!currentState);
 		}
 	}
 
@@ -61,7 +56,6 @@ public class Amino_Acid_Quiz_II
 			super("Amino Acid Quiz");
 			//setting up gui
 			setSize(400,200);
-			setVisible(true);
 			setLocationRelativeTo(null);
 			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			//set layout
@@ -78,7 +72,7 @@ public class Amino_Acid_Quiz_II
 			aaQuestion.setText("Question");
 			aaAnswer.setText("Answer");
 			aaTime.setText("Time");
-			aaQuestion.setVisible(true);
+			setVisible(true);
 		}
 
 		public void timeUpdate(long currentTime)
@@ -115,12 +109,20 @@ public class Amino_Acid_Quiz_II
 			}
 		}
 
-		public void run()
+		public void run() throws Exception
 		{
-			while (!(isTimeUp()))
+			while (!(isTimeUp())) //<------------Make this run every secodn instead of constnatly spinning
 			{
 				//how do I reference this ? <-----------------------------------------------------------------------------------
-				aaQuiz.frame.timeUpdate(currentTime());
+				SwingUtilities.invokeLater(new Runnable()
+				{
+
+					frame.timeUpdate(currentTime());
+					Thread.sleep(250);
+						
+					
+				});
+				
 			}
 		}
 	}
