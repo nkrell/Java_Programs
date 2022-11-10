@@ -7,6 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 import java.awt.event.*; 
 import javax.swing.SwingUtilities;
+import java.lang.reflect.InvocationTargetException;
 
 
 
@@ -109,19 +110,33 @@ public class Amino_Acid_Quiz_II
 			}
 		}
 
-		public void run() throws Exception
+		public void run() 
 		{
 			while (!(isTimeUp())) //<------------Make this run every secodn instead of constnatly spinning
 			{
 				//how do I reference this ? <-----------------------------------------------------------------------------------
-				SwingUtilities.invokeLater(new Runnable()
+				try 
 				{
-
-					frame.timeUpdate(currentTime());
-					Thread.sleep(250);
+					SwingUtilities.invokeAndWait(new Runnable()
+					{
+						public void run()
+						{
+							frame.timeUpdate(currentTime());
+						}
+					
+					
 						
 					
-				});
+					});
+				}
+				catch (InvocationTargetException e)
+				{
+					e.printStackTrace();
+				}
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
 				
 			}
 		}
