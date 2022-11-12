@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.awt.BorderLayout;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import java.awt.event.*; 
@@ -27,21 +28,51 @@ public class Amino_Acid_Quiz_II
 
 	private class Toggle implements ActionListener
 	{
+		//declare fullnames and shortnames to allow for questions and answers
+		public String[] FULL_NAMES = 
+		{
+			"alanine","arginine", "asparagine", 
+			"aspartic acid", "cysteine",
+			"glutamine",  "glutamic acid",
+			"glycine" ,"histidine","isoleucine",
+			"leucine",  "lysine", "methionine", 
+			"phenylalanine", "proline", 
+			"serine","threonine","tryptophan", 
+			"tyrosine", "valine"
+		};
+		public String[] SHORT_NAMES = 
+		{ 
+			"A","R", "N", "D", "C", "Q", "E", 
+			"G",  "H", "I", "L", "K", "M", "F", 
+			"P", "S", "T", "W", "Y", "V" 
+		};
+
 		private boolean start = true;
+		public Timer timer1;
 		public void actionPerformed(ActionEvent arg0)
 		{
+			
 			if (start == true)
 			{
-				Timer timer1 = new Timer(1);
+				timer1 = new Timer(1);
 				new Thread(timer1).start();
+				//make random number generator to choose question
+				Random rand = new Random();
+				int randPick = 0;
+				
+				
+				
 
 			}
+			else if (start == false) 
+			{
+				timer1.stop();
+			}
+			start = !(start);
+
+	
 		}
 
-		private boolean flip(boolean currentState)
-		{
-			return(!currentState);
-		}
 	}
 
 	private class FrameSetter extends JFrame
@@ -80,12 +111,35 @@ public class Amino_Acid_Quiz_II
 		{
 			aaTime.setText("Time: " + currentTime);
 		}
+
+		public void timeEnd(String message)
+		{
+			aaTime.setText(message);
+		}
+
+		public void questionUpdate(String question)
+		{
+			aaQuestion.setText(question);
+		}
+
+		public String getAnswer()
+		{
+			return(aaAnswer.getText());
+		}
+
+		public String getQuestion()
+		{
+			return(aaQuestion.getText());
+		}
+
+
 	}
 
 	private class Timer implements Runnable
 	{
 		private final int threadID;
 		private long startTime;
+		private boolean stop = false;
 
 		public Timer(int threadID)
 		{
@@ -112,9 +166,9 @@ public class Amino_Acid_Quiz_II
 
 		public void run() 
 		{
-			while (!(isTimeUp())) //<------------Make this run every secodn instead of constnatly spinning
+			while (!(isTimeUp()) && !(stop)) 
 			{
-				//how do I reference this ? <-----------------------------------------------------------------------------------
+				
 				try 
 				{
 					SwingUtilities.invokeAndWait(new Runnable()
@@ -139,6 +193,12 @@ public class Amino_Acid_Quiz_II
 				}
 				
 			}
+			frame.timeEnd("Time is Up");
+		}
+
+		public void stop()
+		{
+			stop = true;
 		}
 	}
 }
