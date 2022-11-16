@@ -31,6 +31,8 @@ public class JavaChess
 		board1.printCords();
 		board1.setBoard();
 		board1.printBoard();
+		board1.movePeice(0,0,4,4);
+		board1.printBoard();
 	}
 	private abstract class LinearPiece
 	{
@@ -49,7 +51,7 @@ public class JavaChess
 
 	private class Board 
 	{
-		public Space[][] gameBoard = new Space[8][8];
+		private Space[][] gameBoard = new Space[8][8];
 
 		public Board()
 		{
@@ -192,14 +194,33 @@ public class JavaChess
 			System.out.println(line);
 			
 		}
+
+		//method to move a peice on the board
+		//In the future this will only be called after the move has been validated elsewhere
+		//Therfore the is no need to valiadte the move here
+		//Becasue this simply repleces the state at the target space, it can be used for both moving and capturing
+		public void movePeice(int startX, int startY, int endX, int endY)
+		{
+			//Later this will be an instance of peice class
+			String peice = "";
+			//find what peice is being moved
+			peice = gameBoard[startX][startY].getState();
+			//set the old space to be empty
+			gameBoard[startX][startY].setState("U");
+			//overtake the state of the new space with the old state
+			gameBoard[endX][endY].setState(peice);
+		}
 	}
 
 	private class Space
 	{
 		//class variables for Space
-		public final int xCord, yCord;
-		public final String spaceColor;
-		public String spaceState;
+		private final int xCord, yCord;
+		private final String spaceColor;
+		//Right now State is a string, but it will later be made into an insance of a "Peice" class
+		//This will allow for the color of the peice to be tracked
+		//Change later---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+		private String spaceState;
 
 		//constructor for peice class
 		public Space(String state, String color, int x, int y)
