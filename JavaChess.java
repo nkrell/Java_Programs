@@ -12,6 +12,7 @@ public class JavaChess
 	public static final String ANSI_PURPLE = "\u001B[35m";
 	public static final String ANSI_CYAN = "\u001B[36m";
 	public static final String ANSI_WHITE = "\u001B[37m";
+
 	//color codes fro terminal background
 	public static final String ANSI_BLACK_BACKGROUND = "\u001B[40m";
 	public static final String ANSI_RED_BACKGROUND = "\u001B[41m";
@@ -21,17 +22,15 @@ public class JavaChess
 	public static final String ANSI_PURPLE_BACKGROUND = "\u001B[45m";
 	public static final String ANSI_CYAN_BACKGROUND = "\u001B[46m";
 	public static final String ANSI_WHITE_BACKGROUND = "\u001B[47m";
+
 	//constructor for entire program
 	public JavaChess()
 	{
 		Board board1 = new Board();
 		board1.printBoardColors();
 		board1.printCords();
-		System.out.println(ANSI_RED + "This text is red!" + ANSI_RESET);
-		String characterCode = "\033[30;47;1m";
-		char character = 'A';
-		System.out.println(characterCode + character);
-		System.out.println(ANSI_RESET);
+		board1.setBoard();
+		board1.printBoard();
 	}
 	private abstract class LinearPiece
 	{
@@ -124,13 +123,74 @@ public class JavaChess
 		//method to set board when starting a new game
 		public void setBoard()
 		{
+			//set pawn rows
+			for (int i = 0; i < 8; i++)
+			{
+				gameBoard[1][i].setState("P");
+				gameBoard[6][i].setState("P");
+			}
 
+			//set non-royal backrow peices for one side
+			gameBoard[0][0].setState("R");
+			gameBoard[0][1].setState("H");
+			gameBoard[0][2].setState("B");
+			gameBoard[0][3].setState("Q");
+			gameBoard[0][4].setState("K");
+			gameBoard[0][5].setState("B");
+			gameBoard[0][6].setState("H");
+			gameBoard[0][7].setState("R");
+
+			//set non-royal backrow peices for other side
+			gameBoard[7][0].setState("R");
+			gameBoard[7][1].setState("H");
+			gameBoard[7][2].setState("B");
+			gameBoard[7][3].setState("Q");
+			gameBoard[7][4].setState("K");
+			gameBoard[7][5].setState("B");
+			gameBoard[7][6].setState("H");
+			gameBoard[7][7].setState("R");
 		}
 
 		//method to show a simplified version of the board as it would appere in the gui
 		public void printBoard()
 		{
-			//
+			for (int i = 0; i < 8; i++)
+			{
+				//temp var for holding growing slice of the board
+				String line = "";
+				for (int j = 0; j < 8; j++)
+				{
+					//collect all attribute of the current space into temp variables
+					String color = gameBoard[i][j].getColor();
+					String state = gameBoard[i][j].getState();
+
+					//get coordianate incase they are needed for later debugging
+					int x = gameBoard[i][j].getX();
+					int y = gameBoard[i][j].getY();
+
+					//determine is space is empty
+					if (state != "U")
+					{
+						line = line + state + " ";
+					}
+					else
+					{
+						//remove later
+						color = " ";
+						line = line + color + " ";
+					}
+					
+				}
+				System.out.println((i) + " " + line);
+			}
+			//prints the bottem row of coordinates
+			String line = "  ";
+			for (int i = 0; i < 8; i++)
+			{
+				line = line + i + " ";
+			}
+			System.out.println(line);
+			
 		}
 	}
 
@@ -172,6 +232,12 @@ public class JavaChess
 		public String getState()
 		{
 			return(this.spaceState);
+		}
+
+		//method to set state post-construction
+		public void setState(String state)
+		{
+			this.spaceState = state;
 		}
 	}
 }
