@@ -28,11 +28,18 @@ public class JavaChess
 	{
 		Board board1 = new Board();
 		board1.printBoardColors();
+		sepLine();
 		board1.printCords();
+		sepLine();
 		board1.setBoard();
 		board1.printBoard();
+		sepLine();
 		board1.movePeice(0,0,4,4);
 		board1.printBoard();
+		sepLine();
+		board1.movePeice(4,4,0,0);
+		board1.printBoard();
+		sepLine();
 	}
 	private abstract class LinearPiece
 	{
@@ -47,6 +54,13 @@ public class JavaChess
 	public static void main(String[] args)
 	{
 		JavaChess game1 = new JavaChess();
+	}
+
+	public void sepLine()
+	{
+		System.out.println("\n");
+		System.out.println("-------------------------------------------------------------------------------------------------------");
+		System.out.println("\n");
 	}
 
 	private class Board 
@@ -183,7 +197,7 @@ public class JavaChess
 					}
 					
 				}
-				System.out.println((i) + " " + line);
+				System.out.println((i) + "   " + line);
 			}
 			//prints the bottem row of coordinates
 			String line = "  ";
@@ -191,7 +205,8 @@ public class JavaChess
 			{
 				line = line + i + " ";
 			}
-			System.out.println(line);
+			System.out.println("  ");
+			System.out.println("  " + line);
 			
 		}
 
