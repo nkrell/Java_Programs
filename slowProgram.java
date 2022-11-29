@@ -48,9 +48,16 @@ public class slowProgram extends JFrame
 		
 	}
 
+	//the main method
 	public static void main(String[] args)
 	{
 		slowProgram p1 = new slowProgram();
+	}
+
+	//method for accessing the input
+	private int getInput()
+	{
+		return(input.getText());
 	}
 
 	//thread that finds primes in a given range
@@ -89,7 +96,7 @@ public class slowProgram extends JFrame
 		{
 
 		}
-		
+
 		//calls several number engines and assigned them each a range of numbers taken from the total range
 		public void run()
 		{
