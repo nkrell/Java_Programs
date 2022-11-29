@@ -18,14 +18,14 @@ public class slowProgram extends JFrame
 	private JTextField output = new JTextField();
 	public JButton startButton = new JButton("Start");
 	public JButton stopButton = new JButton("Stop");
-	private JPanel start_stop = new JPanel();
-	private JPanel input_output = new JPanel();
+	private JPanel start_stop = new JPanel();//remeber to add action listener <------------------------------------
+	private JPanel input_output = new JPanel();//remeber to add action listener <----------------------------------
 
 	public slowProgram()
 	{
 		super("Slow Process Program");
 		//setting up gui
-		setSize(600,200);
+		setSize(300,200);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//set up button sub-panel
@@ -40,6 +40,9 @@ public class slowProgram extends JFrame
 		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(input_output, BorderLayout.WEST);
 		getContentPane().add(start_stop, BorderLayout.EAST);
+		//set attributes
+		input.setColumns(20);
+		output.setColumns(20);
 		//set visible
 		setVisible(true);
 		
@@ -49,4 +52,50 @@ public class slowProgram extends JFrame
 	{
 		slowProgram p1 = new slowProgram();
 	}
+
+	//thread that finds primes in a given range
+	private class NumberEngine implements Runnable
+	{	
+		//uses to keep track of multiple threads
+		private final  int threadID;
+		//the sub range for assigned to this specific thread
+		private int subRange;
+
+		//constructor
+		public NumberEngine(int threadID, int subRange)
+		{
+
+		}
+
+		//calculates all the primes in a given range
+		public void run()
+		{
+
+		}
+
+	}
+
+
+	//thread for assigning number ranges to the prime caculation threads
+	private class Cycler implements Runnable
+	{	
+		//this is just for conventions sake, there won't ever be more than one of these
+		private final int threadID;
+		//this give the upper bound beneath which all primes must be found
+		private final int range;
+
+		//constructor
+		public Cycler(int threadID, int range)
+		{
+
+		}
+		
+		//calls several number engines and assigned them each a range of numbers taken from the total range
+		public void run()
+		{
+
+		}
+	}
+
+
 }
