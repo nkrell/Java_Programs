@@ -25,6 +25,8 @@ public class primeFinder extends JFrame
 	//declare gui elements
 	private JTextArea outputPane;
 	private JScrollPane scrollableOutputPane;
+	private JTextArea outputPane2;
+	private JScrollPane scrollableOutputPane2;
 	private JButton startButton = new JButton("Start");
 	private JButton stopButton = new JButton("Cancel");
 	private JLabel threadLabel = new JLabel("Enter the number of threads : ");
@@ -40,15 +42,18 @@ public class primeFinder extends JFrame
 	{
 		super("Prime Finder");
 		//setting up gui
-		//setSize(1366,768); ---------for large monitors
-		setSize(1200, 600); // for smaller monitors
+		setSize(1366,768); //---------for large monitors
+		//setSize(1200, 600); // for smaller monitors
 		setLocationRelativeTo(null);
 		setLayout(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//set up scrolling pane
 		outputPane = new JTextArea(20, 25);
+		outputPane2 = new JTextArea(20, 25);
 		scrollableOutputPane = new JScrollPane(outputPane);
+		scrollableOutputPane2 = new JScrollPane(outputPane2);
 		scrollableOutputPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollableOutputPane2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		//set up locations of elements
 		numInput.setBounds(650, 70, 300, 20);
 		threadInput.setBounds(650, 100, 300, 20);
@@ -57,12 +62,14 @@ public class primeFinder extends JFrame
 		startButton.setBounds(400, 0, 483, 60);
 		stopButton.setBounds(883, 0, 483, 60);
 		scrollableOutputPane.setBounds(0, 0, 400, 768);
+		scrollableOutputPane2.setBounds(410, 200, 400, 400);
 		//add elements
 		add(numInput);
 		add(threadInput);
 		add(numLabel);
 		add(threadLabel);
 		add(scrollableOutputPane);
+		add(scrollableOutputPane2);
 		add(startButton);
 		add(stopButton);
 		//set attributes
@@ -88,11 +95,18 @@ public class primeFinder extends JFrame
 		return(i);
 	}
 
-	public void output(String output)
+	//outputs to main pane
+	public synchronized void output(String output)
 	{
 		//SwingUtilities.invokeLater(
 
 		outputPane.append(output + "\n");
+	}
+
+	//outputs to secondary pane
+	public synchronized void output2(String output)
+	{
+		outputPane2.append(output + "\n");
 	}
 
 	public String checkNumber()
@@ -182,6 +196,11 @@ public class primeFinder extends JFrame
 		private final int threadNumber;
 		//keeps track of time
 		private long startTime;
+		//track data about the progress of the engines
+		private int[] primeCount;
+		private boolean[] isDone;
+		//track the progress of overall process
+		private boolean done = false;
 
 		//constructor
 		public Cycler(int threadID, int threadNumber, int range)
@@ -203,23 +222,58 @@ public class primeFinder extends JFrame
 			return((System.currentTimeMillis() - startTime) / 1000);
 		}
 
+		//updates primeCount
+		public synchronized void primeCountUpdate(int position, int update)
+		{
+			primeCount[position] = update;
+		}
+
+		//updates isDone
+		public synchronized void isDoneUpdate(int position, boolean update)
+		{
+			isDone[position] = update;
+		}
+
+		//get primeCount
+		public synchronized int[] getPrimeCount()
+		{
+			return(primeCount);
+		}
+
+		//get isDone
+		public synchronized boolean[] getIsDone()
+		{
+			return(isDone);
+		}
+
 		//calls several number engines and assigns them each a range of numbers taken from the total range
 		public void run()
 		{
-
+			//keep trakc of how many primes have been found 
+			int sum = 0;
 			//this is used to find a number that is divisilbe by the threadNumber
 			int rangeModified = range;
 			//this is the size of each subrange
 			int subRange;
 			//this keeps track of the growing range
 			int upperRange;
-			//kepps trakc of the lower range
+			//kepps track of the lower range
 			int lowerRange;
-			//track data about the progress of the engines
-			int[] primeCount = new int[threadNumber];
-			boolean[] isDone = new boolean[threadNumber];
+			//remembers the original upperRange
+			int originalUpperRange = range;
 			//create the number engines
 			NumberEngine[] engines = new NumberEngine[threadNumber];
+
+			//finish setting up isDone and primeCount now that threadNumber is finalized
+			//don't need to use synchronized methods yet as no threads are spawned
+			isDone = new boolean[threadNumber];
+			primeCount = new int[threadNumber];
+			//initilize isDone and primeCount
+			for (int i = 0; i < threadNumber; i++)
+			{
+				isDone[i] = false;
+				primeCount[i] = 0;
+			}
 
 			output("Cycler thread started");
 			//start the clock
@@ -229,17 +283,25 @@ public class primeFinder extends JFrame
 			{
 				rangeModified++;
 			}
-			output("Range modified: " + Integer.toString(rangeModified));
+			//output("Range modified: " + Integer.toString(rangeModified));
 			subRange = rangeModified / threadNumber;
-			output("sub range : " + Integer.toString(subRange));
+			//output("sub range : " + Integer.toString(subRange));
 			upperRange = subRange;
 			lowerRange = 0;
 			for (int i = 0; i < threadNumber; i++)
 			{
-				output("Range: " + Integer.toString(lowerRange) + " to " + Integer.toString(upperRange));
+				//output("Range: " + Integer.toString(lowerRange) + " to " + Integer.toString(upperRange));
 				//set up number engines
 				engines[i] = new NumberEngine(i, lowerRange, upperRange);
-				upperRange = upperRange + subRange;
+				//make sure the upper range doesnt exceed the original upper range
+				if (upperRange > originalUpperRange)
+				{
+					upperRange = originalUpperRange;
+				}
+				else 
+				{
+					upperRange = upperRange + subRange;
+				}
 				lowerRange = lowerRange + subRange;
 			}
 
@@ -256,7 +318,64 @@ public class primeFinder extends JFrame
 				}
 
 				//begin cycling through assigned tasks until done or cancelled
+				while (true)
+				{
+					//check if cancelled
+					if (isCancelled())
+					{
+						break;
+					}
 
+					//check if done
+					//make temp copy of isDone
+					boolean[] isDoneCopy = getIsDone();
+					//count how many threads are done
+					int threadCount = 0;
+					for (int i = 0; i < threadNumber; i++)
+					{
+						
+						if (isDoneCopy[i])
+						{
+							threadCount++;
+						}
+						if (threadCount == threadNumber)
+						{
+							done = true;
+						}
+					}
+					if (done)
+					{
+						break;
+					}
+
+					//print total prime count
+					//make temp copy of primeCount
+					int[] primeCountCopy = getPrimeCount();
+					for (int i = 0; i < threadNumber; i++)
+					{
+						sum = sum + primeCountCopy[i];
+					}
+					output(Integer.toString(sum) + " primes found");
+
+					//wait 
+					Thread.sleep(250);
+				}
+				//say if thread stopped due to cancellation or not
+				if (isCancelled())
+				{
+					output("Operation cancelled");
+				}
+
+				//say how long operation took
+				output("Operation took: " + Long.toString(currentTime()) + " seconds");
+
+				//count up primes one last time
+				int[] primeCountCopy = getPrimeCount();
+				for (int i = 0; i < threadNumber; i++)
+				{
+					sum = sum + primeCountCopy[i];
+				}
+				output(Integer.toString(sum) + " primes found");
 			}
 			catch (Exception e)
 			{
@@ -329,14 +448,19 @@ public class primeFinder extends JFrame
 						{
 							//increase number of found primes
 							primeTotal++;
-							output(Integer.toString(currentNumber) + " is prime"); //remove later, this isnt threadsafe
+							//output2(Integer.toString(currentNumber) + " is prime"); 
 						}
 					}
 					//increase current number
 					currentNumber++;
 
+					//report number of primes found
+					cycler1.primeCountUpdate(threadID, primeTotal);
+
 
 				}
+				cycler1.isDoneUpdate(threadID, true);
+				//output("Thread done");
 			}
 			catch (Exception e)
 			{
