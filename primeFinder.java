@@ -356,6 +356,7 @@ public class primeFinder extends JFrame
 						sum = sum + primeCountCopy[i];
 					}
 					output(Integer.toString(sum) + " primes found");
+					sum = 0;
 
 					//wait 
 					Thread.sleep(250);
@@ -448,7 +449,7 @@ public class primeFinder extends JFrame
 						{
 							//increase number of found primes
 							primeTotal++;
-							//output2(Integer.toString(currentNumber) + " is prime"); 
+							output2(Integer.toString(currentNumber) + " is prime"); 
 						}
 					}
 					//increase current number
