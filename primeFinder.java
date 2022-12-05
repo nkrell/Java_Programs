@@ -213,6 +213,9 @@ public class primeFinder extends JFrame
 			int upperRange;
 			//kepps trakc of the lower range
 			int lowerRange;
+			//track data about the progress of the engines
+			int[] primeCount = new int[threadNumber];
+			boolean[] isDone = new boolean[threadNumber];
 			//create the number engines
 			NumberEngine[] engines = new NumberEngine[threadNumber];
 
@@ -247,7 +250,7 @@ public class primeFinder extends JFrame
 				for (int i = 0; i < threadNumber; i++)
 				{
 					new Thread(engines[i]).start();
-					output(" Number engine thread started");
+					output("Number engine thread started");
 				}
 
 				//begin cycling through assigned tasks until done or cancelled
@@ -282,10 +285,10 @@ public class primeFinder extends JFrame
 		{
 			//keeps track of which number is being analysed
 			int currentNumber = lowerRange;
-			//skip 1 and 2
-			if (currentNumber == 0)
+			//skip 1 
+			if (currentNumber == 1)
 			{
-				currentNumber = 3;
+				currentNumber = 2;
 			}
 			try 
 			{
@@ -322,11 +325,15 @@ public class primeFinder extends JFrame
 						//update count here
 						if (isPrime)
 						{
-							output(Integer.toString(currentNumber) + " is prime");
+							//increase number of found primes
+							primeTotal++;
+							output(Integer.toString(currentNumber) + " is prime"); //remove later, this isnt threadsafe
 						}
 					}
 					//increase current number
 					currentNumber++;
+
+
 				}
 			}
 			catch (Exception e)
