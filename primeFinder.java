@@ -31,12 +31,17 @@ public class primeFinder extends JFrame
 	private JLabel numLabel = new JLabel("Enter a large integer: ");
 	private JTextField numInput = new JTextField();
 	private JTextField threadInput = new JTextField();
+	private boolean cancelled = false;
+	//program supports up to 16 threads
+	//private numberEngine engine1, engine2, engine3, engine4, engine5, engine6, engine7, engine8, engine9, engine10, engine11,
+						//engine12, engine13, engine14, engine15, engine16;
 
 	public primeFinder()
 	{
 		super("Prime Finder");
 		//setting up gui
-		setSize(1366,768);
+		//setSize(1366,768); ---------for large monitors
+		setSize(1200, 600); // for smaller monitors
 		setLocationRelativeTo(null);
 		setLayout(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -62,6 +67,7 @@ public class primeFinder extends JFrame
 		add(stopButton);
 		//set attributes
 		startButton.addActionListener(new startButtonPress());
+		stopButton.addActionListener(new stopButtonPress());
 		//set visible
 		setVisible(true);
 		
@@ -69,7 +75,7 @@ public class primeFinder extends JFrame
 
 	}
 
-	//getter and setter methods for JFrame Elements
+	//getter and setter methods for main class
 	public int getNumber()
 	{
 		int i = Integer.parseInt(numInput.getText());  
@@ -95,6 +101,16 @@ public class primeFinder extends JFrame
 	public String checkThreadNumber()
 	{
 		return(threadInput.getText());
+	}
+
+	public boolean isCancelled()
+	{
+		return(cancelled);
+	}
+
+	public void cancel()
+	{
+		cancelled = true;
 	}
 
 	//Utility methods
@@ -127,13 +143,14 @@ public class primeFinder extends JFrame
 		int number, threadNumber = 0;
 		public void actionPerformed(ActionEvent arg0)
 		{
-			if ((isNumeric(checkNumber())) && (isNumeric(checkThreadNumber())))
+			//my computer has 16 threads, and its rare that a computer has more
+			if ((isNumeric(checkNumber())) && (isNumeric(checkThreadNumber())) && (checkThreadNumber <= 16))
 			{
 				//retreive number and thread number
 				number = getNumber();
 				threadNumber = getThreadNumber();
 				//Start cycler thread
-				cycler1 = new Cycler(1, threadNumber, number);
+				cycler1 = new Cycler(0, threadNumber, number);
 				new Thread(cycler1).start();
 			}
 			else 
@@ -142,6 +159,14 @@ public class primeFinder extends JFrame
 			}
 			
 			
+		}
+	}
+
+	private class stopButtonPress implements ActionListener
+	{
+		public void actionPerformed(ActionEvent arg0)
+		{
+			cancel();
 		}
 	}
 
@@ -181,13 +206,80 @@ public class primeFinder extends JFrame
 		public void run()
 		{
 
+			//this is used to find a number that is divisilbe by the threadNumber
+			int rangeModified = range;
+			//this is the size each subrange
+			int subRange;
+			//this keeps track of the growing range
+			int growingRange;
+			//create the number engines
+			NumberEngine[] engines = new NumberEngine[threadNumber];
+
 			output("Thread started");
 			//start the clock
 			startClock();
 			//divide up the number range
+			while ((rangeModified % threadNumber) != 0)
+			{
+				rangeModified++;
+			}
+			output("Range modified: " + Integer.toString(rangeModified));
+			subRange = rangeModified / threadNumber;
+			output("sub range : " + Integer.toString(subRange));
+			growingRange = subRange;
+			for (int i = 0; i < threadNumber; i++)
+			{
+				output("Range: " + Integer.toString(growingRange));
+				growingRange = growingRange + subRange;
+				//set up number engines
+				engines[i] = new NumberEngine(i, growingRange);
+			}
 
+			
 
+			//try allows the thread to sleep
+			try
+			{
+
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
 		}
+	}
+
+	//this class actually performs the calculations
+	private class NumberEngine implements Runnable
+	{
+		//to kepp track of the threads
+		private final int threadID;
+		//the range within which all primes must be found
+		private final int range;
+
+		//the constructor
+		public NumberEngine(int threadID, int range)
+		{
+			this.threadID = threadID;
+			this.range = range;
+		}
+
+		public void run()
+		{
+			//try allows the thread to sleep
+			try
+			{
+				while (true)
+				{
+					
+				}
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 
