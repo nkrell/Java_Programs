@@ -90,6 +90,8 @@ public class primeFinder extends JFrame
 
 	public void output(String output)
 	{
+		//SwingUtilities.invokeLater(
+
 		outputPane.append(output + "\n");
 	}
 
