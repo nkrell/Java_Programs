@@ -143,8 +143,7 @@ public class primeFinder extends JFrame
 		int number, threadNumber = 0;
 		public void actionPerformed(ActionEvent arg0)
 		{
-			//my computer has 16 threads, and its rare that a computer has more
-			if ((isNumeric(checkNumber())) && (isNumeric(checkThreadNumber())) && (checkThreadNumber <= 16))
+			if ((isNumeric(checkNumber())) && (isNumeric(checkThreadNumber())))
 			{
 				//retreive number and thread number
 				number = getNumber();
@@ -208,14 +207,16 @@ public class primeFinder extends JFrame
 
 			//this is used to find a number that is divisilbe by the threadNumber
 			int rangeModified = range;
-			//this is the size each subrange
+			//this is the size of each subrange
 			int subRange;
 			//this keeps track of the growing range
-			int growingRange;
+			int upperRange;
+			//kepps trakc of the lower range
+			int lowerRange;
 			//create the number engines
 			NumberEngine[] engines = new NumberEngine[threadNumber];
 
-			output("Thread started");
+			output("Cycler thread started");
 			//start the clock
 			startClock();
 			//divide up the number range
@@ -226,13 +227,15 @@ public class primeFinder extends JFrame
 			output("Range modified: " + Integer.toString(rangeModified));
 			subRange = rangeModified / threadNumber;
 			output("sub range : " + Integer.toString(subRange));
-			growingRange = subRange;
+			upperRange = subRange;
+			lowerRange = 0;
 			for (int i = 0; i < threadNumber; i++)
 			{
-				output("Range: " + Integer.toString(growingRange));
-				growingRange = growingRange + subRange;
+				output("Range: " + Integer.toString(lowerRange) + " to " + Integer.toString(upperRange));
 				//set up number engines
-				engines[i] = new NumberEngine(i, growingRange);
+				engines[i] = new NumberEngine(i, lowerRange, upperRange);
+				upperRange = upperRange + subRange;
+				lowerRange = lowerRange + subRange;
 			}
 
 			
@@ -240,6 +243,14 @@ public class primeFinder extends JFrame
 			//try allows the thread to sleep
 			try
 			{
+				//start the number engines
+				for (int i = 0; i < threadNumber; i++)
+				{
+					new Thread(engines[i]).start();
+					output(" Number engine thread started");
+				}
+
+				//begin cycling through assigned tasks until done or cancelled
 
 			}
 			catch (Exception e)
@@ -255,23 +266,67 @@ public class primeFinder extends JFrame
 		//to kepp track of the threads
 		private final int threadID;
 		//the range within which all primes must be found
-		private final int range;
+		private final int lowerRange, upperRange;
+		//tracks the number of primes found
+		private int primeTotal = 0;
 
 		//the constructor
-		public NumberEngine(int threadID, int range)
+		public NumberEngine(int threadID, int lowerRange, int upperRange)
 		{
 			this.threadID = threadID;
-			this.range = range;
+			this.lowerRange = lowerRange;
+			this.upperRange = upperRange;
 		}
 
 		public void run()
 		{
-			//try allows the thread to sleep
-			try
+			//keeps track of which number is being analysed
+			int currentNumber = lowerRange;
+			//skip 1 and 2
+			if (currentNumber == 0)
 			{
+				currentNumber = 3;
+			}
+			try 
+			{
+				//go through assigned tasks until done or cancelled
 				while (true)
 				{
-					
+					//check if done
+					if (currentNumber > upperRange)
+					{
+						break;
+					}
+
+					//check if cancelled
+					if (isCancelled())
+					{
+						break;
+					}
+
+					//check if number is odd
+					if (currentNumber % 2 != 0)
+					{
+						//tracks if the number is prime
+						boolean isPrime = true;
+
+						//check if prime
+						for (int i = 3; i < currentNumber; i++)
+						{
+							if ((currentNumber % i) == 0)
+							{
+								isPrime = false;
+								//break;
+							}
+						}
+						//update count here
+						if (isPrime)
+						{
+							output(Integer.toString(currentNumber) + " is prime");
+						}
+					}
+					//increase current number
+					currentNumber++;
 				}
 			}
 			catch (Exception e)
