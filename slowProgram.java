@@ -6,46 +6,57 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import java.awt.BorderLayout;
-import javax.swing.JTextField;
+import javax.swing.JTextField;  
 import java.awt.event.*; 
 import javax.swing.SwingUtilities;
 import java.lang.reflect.InvocationTargetException;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 public class slowProgram extends JFrame
 {	
 	//declare gui elements
 	private JTextField input = new JTextField();
-	private JTextField output = new JTextField();
 	public JButton startButton = new JButton("Start");
 	public JButton stopButton = new JButton("Stop");
 	private JPanel start_stop = new JPanel();//remeber to add action listener <------------------------------------
-	private JPanel input_output = new JPanel();//remeber to add action listener <----------------------------------
+	private JTextArea outputPane;
+	private JScrollPane scrollableOutputPane;
 
 	public slowProgram()
 	{
 		super("Slow Process Program");
 		//setting up gui
-		setSize(300,200);
+		setSize(400,300);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//set up button sub-panel
 		start_stop.setLayout(new BorderLayout());
 		start_stop.add(startButton, BorderLayout.NORTH);
 		start_stop.add(stopButton, BorderLayout.SOUTH);
-		//set up text field sub-panel
-		input_output.setLayout(new BorderLayout());
-		input_output.add(input, BorderLayout.NORTH);
-		input_output.add(output, BorderLayout.SOUTH);
+		//set up scrolling pane
+		outputPane = new JTextArea(20, 25);
+		scrollableOutputPane = new JScrollPane(outputPane);
+		scrollableOutputPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		//set layout
 		getContentPane().setLayout(new BorderLayout());
-		getContentPane().add(input_output, BorderLayout.WEST);
 		getContentPane().add(start_stop, BorderLayout.EAST);
+		getContentPane().add(scrollableOutputPane, BorderLayout.WEST);
+		getContentPane().add(input, BorderLayout.SOUTH);
 		//set attributes
-		input.setColumns(20);
-		output.setColumns(20);
+		input.setColumns(15);
+		startButton.addActionListener(new startButtonPress());
 		//set visible
 		setVisible(true);
 		
+	}
+
+	public void textOutput(String output)
+	{
+		outputPane.append(output + "\n");
 	}
 
 	//the main method
@@ -54,55 +65,15 @@ public class slowProgram extends JFrame
 		slowProgram p1 = new slowProgram();
 	}
 
-	//method for accessing the input
-	private int getInput()
+	private class startButtonPress implements ActionListener
 	{
-		return(input.getText());
-	}
-
-	//thread that finds primes in a given range
-	private class NumberEngine implements Runnable
-	{	
-		//uses to keep track of multiple threads
-		private final  int threadID;
-		//the sub range for assigned to this specific thread
-		private int subRange;
-
-		//constructor
-		public NumberEngine(int threadID, int subRange)
+		public void actionPerformed(ActionEvent arg0)
 		{
-
-		}
-
-		//calculates all the primes in a given range
-		public void run()
-		{
-
-		}
-
-	}
-
-
-	//thread for assigning number ranges to the prime caculation threads
-	private class Cycler implements Runnable
-	{	
-		//this is just for conventions sake, there won't ever be more than one of these
-		private final int threadID;
-		//this give the upper bound beneath which all primes must be found
-		private final int range;
-
-		//constructor
-		public Cycler(int threadID, int range)
-		{
-
-		}
-
-		//calls several number engines and assigned them each a range of numbers taken from the total range
-		public void run()
-		{
-
+			textOutput("Enter a large integer: ");
 		}
 	}
+
+	
 
 
 }
