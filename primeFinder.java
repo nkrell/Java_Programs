@@ -129,6 +129,11 @@ public class primeFinder extends JFrame
 		cancelled = true;
 	}
 
+	public void unCancel()
+	{
+		cancelled = false;
+	}
+
 	//Utility methods
 	public static boolean isNumeric(String strNum) 
 	{
@@ -159,6 +164,8 @@ public class primeFinder extends JFrame
 		int number, threadNumber = 0;
 		public void actionPerformed(ActionEvent arg0)
 		{
+			//reset cancel
+			unCancel();
 			if ((isNumeric(checkNumber())) && (isNumeric(checkThreadNumber())))
 			{
 				//retreive number and thread number
@@ -377,6 +384,7 @@ public class primeFinder extends JFrame
 					sum = sum + primeCountCopy[i];
 				}
 				output(Integer.toString(sum) + " primes found");
+				sum = 0;
 			}
 			catch (Exception e)
 			{
@@ -407,10 +415,15 @@ public class primeFinder extends JFrame
 		{
 			//keeps track of which number is being analysed
 			int currentNumber = lowerRange;
-			//skip 1 
-			if (currentNumber == 1)
+			//skip first few 
+			if (currentNumber == 0)
 			{
-				currentNumber = 2;
+				output2(Integer.toString(2) + " is prime");
+				output2(Integer.toString(3) + " is prime");
+				output2(Integer.toString(5) + " is prime");
+				output2(Integer.toString(7) + " is prime");
+				primeTotal = primeTotal + 4;
+				currentNumber = 11;
 			}
 			try 
 			{
@@ -436,14 +449,27 @@ public class primeFinder extends JFrame
 						boolean isPrime = true;
 
 						//check if prime
-						for (int i = 3; i < currentNumber; i++)
-						{
-							if ((currentNumber % i) == 0)
-							{
-								isPrime = false;
+						//for (int i = 3; i < currentNumber; i++)
+						//{
+							//if ((currentNumber % i) == 0)
+							//{
+								//isPrime = false;
 								//break;
-							}
+							//}
+						//}
+						if ((currentNumber % 3) == 0)
+						{
+							isPrime = false;
 						}
+						if ((currentNumber % 5) == 0)
+						{
+							isPrime = false;
+						}
+						if ((currentNumber % 7) == 0)
+						{
+							isPrime = false;
+						}
+
 						//update count here
 						if (isPrime)
 						{
