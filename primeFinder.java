@@ -449,26 +449,15 @@ public class primeFinder extends JFrame
 						boolean isPrime = true;
 
 						//check if prime
-						//for (int i = 3; i < currentNumber; i++)
-						//{
-							//if ((currentNumber % i) == 0)
-							//{
-								//isPrime = false;
-								//break;
-							//}
-						//}
-						if ((currentNumber % 3) == 0)
+						for (int i = 3; i < currentNumber; i++)
 						{
-							isPrime = false;
+							if ((currentNumber % i) == 0)
+							{
+								isPrime = false;
+								break;
+							}
 						}
-						if ((currentNumber % 5) == 0)
-						{
-							isPrime = false;
-						}
-						if ((currentNumber % 7) == 0)
-						{
-							isPrime = false;
-						}
+						
 
 						//update count here
 						if (isPrime)
