@@ -63,12 +63,17 @@ public class JavaChess
 		System.out.println("\n");
 	}
 
+	//the board class
 	private class Board 
-	{
+	{	
+		//there is only one board and it is made up of spaces
 		private Space[][] gameBoard = new Space[8][8];
 
+		//constructor for the board class
 		public Board()
 		{
+			//this sets the board
+			//It honestly would have been easier to hardcode this
 			boolean	passFlag = false;
 			for (int i = 0; i < 8; i++)
 			{
@@ -199,7 +204,7 @@ public class JavaChess
 				}
 				System.out.println((i) + "   " + line);
 			}
-			//prints the bottem row of coordinates
+			//prints the bottom row of coordinates
 			String line = "  ";
 			for (int i = 0; i < 8; i++)
 			{
@@ -227,6 +232,7 @@ public class JavaChess
 		}
 	}
 
+	//the space class
 	private class Space
 	{
 		//class variables for Space
@@ -276,4 +282,6 @@ public class JavaChess
 			this.spaceState = state;
 		}
 	}
+
+
 }
