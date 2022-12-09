@@ -33,12 +33,17 @@ public class Chess
 		RenderingEngine engine = new RenderingEngine();
 		board1.setBoard();
 		board1.printBoard();
-		//board1.printCords();
+		//
 		board1.printBoardColors();
 		board1.attributes(1,6);
+		
+		engine.resetVisible();
+		engine.addCord(board1);
+		engine.addPieces(board1);
 		engine.addBoard(board1);
 		engine.resetVisible();
-		engine.resetVisible();
+		//board1.printCords();
+		
 	}
 
 	// describes the behavior of peices that move in stright lines
@@ -112,11 +117,12 @@ public class Chess
 					//collect attributes of the board spaces
 					String color = gameBoard[i][j].getColor();
 					String state = gameBoard[i][j].getState().getPieceType();
+					String pieceColor = gameBoard[i][j].getState().getPieceColor();
 
 					//determine if space is empty
 					if (state != "U")
 					{
-						line = line + state + " ";
+						line = line + pieceColor + " ";
 					}
 					else
 					{
@@ -173,8 +179,9 @@ public class Chess
 					//get cords
 					int x = gameBoard[i][j].getX();
 					int y = gameBoard[i][j].getY();
+					String state = gameBoard[i][j].getState().getPieceType();
 					//put cords into readable format
-					line = line + "(" + x + ", " + y + ")";
+					line = line + "(" + x + ", " + y +  " " + state + ")";
 				}
 				System.out.println(line);
 			}
@@ -191,11 +198,48 @@ public class Chess
 		{
 			//pawn
 			Piece whitePawn = new Piece("W", "P");
+			Piece blackPawn = new Piece("B", "P");
+			//Rook
+			Piece whiteRook = new Piece("W", "R");
+			Piece blackRook = new Piece("B", "R");
+			//Knight
+			Piece whiteKnight = new Piece("W", "H");
+			Piece blackKnight = new Piece("B", "H");
+			//Bishop
+			Piece whiteBishop = new Piece("W", "B");
+			Piece blackBishop = new Piece("B", "B");
+			//Queen
+			Piece whiteQueen = new Piece("W", "Q");
+			Piece blackQueen = new Piece("B", "Q");
+			//King
+			Piece whiteKing = new Piece("W", "K");
+			Piece blackKing = new Piece("B", "K");
 			//set pawn rows
 			for (int i = 0; i < 8; i++)
 			{
-				gameBoard[1][i].setState(whitePawn);
+				gameBoard[i][1].setState(whitePawn);
+				gameBoard[i][6].setState(blackPawn);
 			}
+			//set rooks
+			gameBoard[0][7].setState(blackRook);
+			gameBoard[7][7].setState(blackRook);
+			gameBoard[0][0].setState(whiteRook);
+			gameBoard[7][0].setState(whiteRook);
+			//set knights
+			gameBoard[6][7].setState(blackKnight);
+			gameBoard[1][7].setState(blackKnight);
+			gameBoard[1][0].setState(whiteKnight);
+			gameBoard[6][0].setState(whiteKnight);
+			//set bishops
+			gameBoard[2][0].setState(whiteBishop);
+			gameBoard[5][0].setState(whiteBishop);
+			gameBoard[2][7].setState(blackBishop);
+			gameBoard[5][7].setState(blackBishop);
+			//set royals
+			gameBoard[3][7].setState(blackQueen);
+			gameBoard[4][7].setState(blackKing);
+			gameBoard[3][0].setState(whiteQueen);
+			gameBoard[4][0].setState(whiteKing);
 
 		}
 
@@ -203,6 +247,18 @@ public class Chess
 		public String getBoardColor(int i, int j)
 		{
 			return(gameBoard[i][j].getColor());
+		}
+
+		//method to get the peice at a given position on the board
+		public Piece getBoardState(int i, int j)
+		{
+			return(gameBoard[i][j].getState());
+		}
+
+		//retruns the space at a given position
+		public Space getBoardSpace(int i, int j)
+		{
+			return(gameBoard[i][j]);
 		}
 	}
 
@@ -313,7 +369,7 @@ public class Chess
 			
 			super("Chess");
 			//setting up basic window attributes
-			setSize(1920, 1080);
+			setSize(1366, 768);
 			setLocationRelativeTo(null);
 			setLayout(null);
 			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -324,12 +380,15 @@ public class Chess
 		//method for fixing visibility errors
 		public void resetVisible()
 		{
-			//this.setState(Frame.ICONIFIED);
-			//this.setState(Frame.NORMAL);
-			//setVisible(true);
-			//setState(Frame.NORMAL);
+			//removeAll();
 			revalidate();
 			repaint();
+		}
+
+		//method for resetting Jframe
+		public void reset()
+		{
+			removeAll();
 		}
 
 		//method for adding board
@@ -341,7 +400,7 @@ public class Chess
 				{
 					JLabel pic = new JLabel();
 					//check the color of the space
-					if (gameBoard.getBoardColor(i, j) == "W")
+					if (gameBoard.getBoardColor(j, i) == "W")
 					{
 						pic.setIcon(new ImageIcon("whiteSpace.png"));
 					}
@@ -352,20 +411,111 @@ public class Chess
 					//find pic dimensions
 					Dimension size = pic.getPreferredSize();
 					//place pic in proper spot
-					pic.setBounds((i + 1) * 50, (j + 1) * 50, size.width, size.height);
+					pic.setBounds((j + 2) * 50, (i + 2) * 50, size.width, size.height);
 					add(pic);
 				}
 			}
 		}
 
 		//method for adding peices
-		public void addPieces()
+		public void addPieces(Board gameBoard)
 		{
 			for (int i = 0; i < 8; i++)
 			{
 				for (int j = 0; j < 8; j++)
 				{
-					
+					JLabel pic = new JLabel();
+					//check what peice is in the space
+					Piece tempPiece = gameBoard.getBoardState(j, i);
+					//if there is no piece
+					if ((tempPiece.getPieceColor() == "U") && (tempPiece.getPieceType() == "U"))
+					{
+						pic.setIcon(new ImageIcon("blankSpace.png"));
+					}
+					//if the piece is a white pawn
+					if ((tempPiece.getPieceColor() == "W") && (tempPiece.getPieceType() == "P"))
+					{
+						pic.setIcon(new ImageIcon("whitePawn.png"));
+					}
+					//if the peice is a black pawn
+					if ((tempPiece.getPieceColor() == "B") && (tempPiece.getPieceType() == "P"))
+					{
+						pic.setIcon(new ImageIcon("blackPawn.png"));
+					}
+					//if the piece is a black rook
+					if ((tempPiece.getPieceColor() == "B") && (tempPiece.getPieceType() == "R"))
+					{
+						pic.setIcon(new ImageIcon("blackRook.png"));
+					}
+					//if the piece is a white rook
+					if ((tempPiece.getPieceColor() == "W") && (tempPiece.getPieceType() == "R"))
+					{
+						pic.setIcon(new ImageIcon("whiteRook.png"));
+					}
+					//if the piece is a white knight
+					if ((tempPiece.getPieceColor() == "W") && (tempPiece.getPieceType() == "H"))
+					{
+						pic.setIcon(new ImageIcon("whiteKnight.png"));
+					}
+					//if the piece is a black knight
+					if ((tempPiece.getPieceColor() == "B") && (tempPiece.getPieceType() == "H"))
+					{
+						pic.setIcon(new ImageIcon("blackKnight.png"));
+					}
+					//if the piece is a white bishop
+					if ((tempPiece.getPieceColor() == "W") && (tempPiece.getPieceType() == "B"))
+					{
+						pic.setIcon(new ImageIcon("whiteBishop.png"));
+					}
+					//if the piece is a black bishop
+					if ((tempPiece.getPieceColor() == "B") && (tempPiece.getPieceType() == "B"))
+					{
+						pic.setIcon(new ImageIcon("blackBishop.png"));
+					}
+					//if the piece is a white queen
+					if ((tempPiece.getPieceColor() == "W") && (tempPiece.getPieceType() == "Q"))
+					{
+						pic.setIcon(new ImageIcon("whiteQueen.png"));
+					}
+						//if the piece is a black queen
+					if ((tempPiece.getPieceColor() == "B") && (tempPiece.getPieceType() == "Q"))
+					{
+						pic.setIcon(new ImageIcon("blackQueen.png"));
+					}
+					//if the piece is a white king
+					if ((tempPiece.getPieceColor() == "W") && (tempPiece.getPieceType() == "K"))
+					{
+						pic.setIcon(new ImageIcon("whiteKing.png"));
+					}
+					//if the piece is a black king
+					if ((tempPiece.getPieceColor() == "B") && (tempPiece.getPieceType() == "K"))
+					{
+						pic.setIcon(new ImageIcon("blackKing.png"));
+					}
+
+
+					//find pic dimensions
+					Dimension size = pic.getPreferredSize();
+					//place pic in proper spot
+					pic.setBounds((j + 2) * 50, (i + 2) * 50, size.width, size.height);
+					add(pic);
+				}
+			}
+		}
+
+		//method for adding coordinate ove the board for debugging
+		public void addCord(Board gameBoard)
+		{
+			for (int i = 0; i < 8; i++)
+			{
+				for (int j = 0; j < 8; j++)
+				{
+					int x = gameBoard.getBoardSpace(j, i).getX();
+					int y = gameBoard.getBoardSpace(j, i).getY();
+					String label = (Integer.toString(x) + ", " + Integer.toString(y));
+					JLabel cord = new JLabel(label);
+					cord.setBounds((j + 2) * 50, (i + 2) * 50, 50, 50);
+					add(cord);
 				}
 			}
 		}
