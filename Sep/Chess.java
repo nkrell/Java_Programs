@@ -14,11 +14,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.*;
 import java.awt.*;
-
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 
 
@@ -46,6 +45,8 @@ public class Chess
 		//board1.printCords();
 		engine.whitesTurn();
 		engine.resetVisible();
+
+
 		
 	}
 
@@ -106,6 +107,20 @@ public class Chess
 			}
 
 			//more code can be put here if other board functions are required
+		}
+
+		//method for moving peices on the board
+		//movement will already have been validated by the time this is called
+		public void move(int startX, int startY, int endX, int endY)
+		{
+			//get the peice that is being moved
+			Piece movingPiece = gameBoard[startX][startY].getState();
+			//empty the space it is moving from
+			Piece emptySpace = new Piece("U", "U");
+			gameBoard[startX][startY].setState(emptySpace);
+			//move the piece to its new space
+			gameBoard[endX][endY].setState(movingPiece);
+
 		}
 
 		//method for printing out a simple version of the board as it would appere in the gui
@@ -263,6 +278,7 @@ public class Chess
 		{
 			return(gameBoard[i][j]);
 		}
+
 	}
 
 	//the space class
@@ -362,6 +378,8 @@ public class Chess
 	//this class handles setting up the gui and updating it
 	private class RenderingEngine extends JFrame
 	{
+		//tracks if the game is over or if it has been canceld
+		boolean gameOver = false;
 		//a copy of board1
 		Board board = new Board();
 		//gui elements for rendering engine
@@ -375,6 +393,12 @@ public class Chess
 		JTextField endingInputLetter = new JTextField();
 		JTextField endingInputNumber = new JTextField();
 		JButton moveButton = new JButton("Move");
+		JButton concedeButton = new JButton("Concede");
+		JButton resetButton = new JButton("Reset");
+		JScrollPane scrollPane;
+		JTextArea outputPane;
+		//variable to keep track of whos turn it is
+		String whosTurn = "White";
 		//the constructor
 		public RenderingEngine()
 		{
@@ -386,6 +410,10 @@ public class Chess
 			setLayout(null);
 			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			//set up gui elements
+			outputPane = new JTextArea(10, 10);
+			scrollPane = new JScrollPane(outputPane);
+			scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+			scrollPane.setBounds(525, 150, 200, 375);
 			startingInputLetter.setBounds(100, 575, 50, 22);
 			startingInputNumber.setBounds(175, 575, 50, 22);
 			startingInputLetterLabel.setBounds(100, 550, 50, 22);
@@ -396,6 +424,8 @@ public class Chess
 			endingInputNumberLabel.setBounds(375, 550, 55, 22);
 			to.setBounds(250, 575, 20, 22);
 			moveButton.setBounds(425, 575, 75, 22);
+			concedeButton.setBounds(525, 100, 100, 22);
+			resetButton.setBounds(627, 100, 100, 22);
 			//add elements
 			add(startingInputLetter);
 			add(endingInputLetter);
@@ -407,10 +437,163 @@ public class Chess
 			add(endingInputLetterLabel);
 			add(endingInputNumberLabel);
 			add(to);
+			add(concedeButton);
+			add(resetButton);
+			add(scrollPane);
 			//set attributes (action listener)
 
 			//set visible
 			setVisible(true);
+		}
+
+		//defines the behavior of the move button
+		private class moveButton implements ActionListener
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				//keeps trakc of whether input is good, makes the logic structure simpler
+				boolean goodInput = true;
+				//set input letter to be uppercase
+				String startingLetter = startingInputLetter.getText().toUpperCase();
+				String endingLetter = endingInputLetter.getText().toUpperCase();
+				//get input numbers
+				String startingNumberString = startingInputNumber.getText();
+				String endingNumberString = endingInputNumber.getText();
+				int startingNumber = 0;
+				int endingNumber = 0;
+				//check that letters are correct
+				goodInput = checkLetter(startingLetter);
+				goodInput = checkLetter(endingLetter);
+				//give message that letters are wrong
+				if (checkLetter(startingLetter) == false)
+				{
+					output("Invalid input in for letter in starting coordinates");
+				}
+				if (checkLetter(endingLetter) == false)
+				{
+					output("Invalid input in for letter in ending coordinates");
+				}
+				//check that numbers are correcnt then convert them to integers
+				goodInput = checkNumber(startingNumberString);
+				goodInput = checkNumber(endingNumberString);
+				if (checkNumber(startingNumberString) && checkNumber(endingNumberString))
+				{
+					startingNumber = Integer.parseInt(startingNumberString);
+					endingNumber = Integer.parseInt(endingNumberString);
+				}
+				//send error message if numbers are wrong
+				if (checkNumber(startingNumberString) == false)
+				{
+					output("Invalid input in for number in starting coordinates");
+				}
+				if (checkNumber(endingNumberString) == false)
+				{
+					output("Invalid input in for number in ending coordinates");
+				}
+				//check turn
+				//convert into my coordinate system
+				int startX = hConvert(startingLetter);
+				int startY = vConvert(startingNumber);
+				int endX = hConvert(endingLetter);
+				int endY = vConvert(endingNumber);
+				if (board.getBoardState(startX, startY).getPieceColor().equals("W"))
+				{
+					if(whosTurn.equals("Black"))
+					{
+						goodInput = false;
+						output("You are trying to move a white piece during black's turn");
+					}
+				}
+				else if (board.getBoardState(startX, startY).getPieceColor().equals("B"))
+				{
+					if(whosTurn.equals("White"))
+					{
+						goodInput = false;
+						output("You are trying to move a black piece during white's turn");
+					}
+				}
+				//check if move is legal (coming soon)------------------------------------------------------------------------
+
+				//modify board
+				//this wont happen if the prerequisites above werent met
+				//in the higher method, the renderingengines copy of board will always be passed, wether a move has been made or not
+				if (goodInput)
+				{
+					board.move(startX, startY, endX, endY);
+				}
+
+
+			}
+
+			//method to check letter input
+			public boolean checkLetter(String letter)
+			{
+				String[] chessCordList = {"A", "B", "C", "D", "E", "F", "G", "H"};
+				for (int i = 0; i < 8; i++)
+				{
+					if (letter.equals(chessCordList[i]))
+					{
+						return(true);
+					}
+				}
+				return(false);
+			}
+
+			//method to check number input
+			public boolean checkNumber(String number)
+			{
+				String[] numberList = {"1", "2", "3", "4", "5", "6", "7", "8"};
+				for (int i = 0; i < 8; i++)
+				{
+					if (number.equals(numberList[i]))
+					{
+						return(true);
+					}
+				}
+				return(false);
+			}
+		}
+
+		//method to update RenderingEngine's copy of the board
+		public void boardUpdate(Board newBoard)
+		{
+			this.board = newBoard;
+		}
+
+		//method to return RenderingEngines copy of the board
+		public Board returnBoard()
+		{
+			return(this.board);
+		}
+
+		
+		//method to output messages to scrollpane
+		public void output(String output)
+		{
+			outputPane.append(output + "\n");
+		}
+
+		//method to convert vertical coordinate system
+		public int vConvert(int chessCord)
+		{	
+			//this is a dumb way of doing this but it helps me rember whats going on
+			int myCord = ((8 - chessCord) * (1 - 2));
+			return(myCord);
+		}
+
+		//method to convert horizontal alphabetical coordinate system
+		public int hConvert(String chessCord)
+		{						  //   0    1    2    3    4    5    6    7
+			String[] chessCordList = {"A", "B", "C", "D", "E", "F", "G", "H"};
+			int myCord = 0;
+			for (int i = 0; i < 8; i++)
+			{
+				if (chessCordList[i].equals(chessCord))
+				{
+					myCord = i;
+				}
+			}
+			return(myCord);
 		}
 
 		//methods to show whites turn banner
@@ -487,7 +670,7 @@ public class Chess
 				{
 					JLabel pic = new JLabel();
 					//check the color of the space
-					if (gameBoard.getBoardColor(j, i) == "W")
+					if (gameBoard.getBoardColor(j, i).equals("W"))
 					{
 						pic.setIcon(new ImageIcon("whiteSpace.png"));
 					}
@@ -515,67 +698,67 @@ public class Chess
 					//check what peice is in the space
 					Piece tempPiece = gameBoard.getBoardState(j, i);
 					//if there is no piece
-					if ((tempPiece.getPieceColor() == "U") && (tempPiece.getPieceType() == "U"))
+					if ((tempPiece.getPieceColor().equals("U")) && (tempPiece.getPieceType().equals("U")))
 					{
 						pic.setIcon(new ImageIcon("blankSpace.png"));
 					}
 					//if the piece is a white pawn
-					if ((tempPiece.getPieceColor() == "W") && (tempPiece.getPieceType() == "P"))
+					if ((tempPiece.getPieceColor().equals("W")) && (tempPiece.getPieceType().equals("P")))
 					{
 						pic.setIcon(new ImageIcon("whitePawn.png"));
 					}
 					//if the peice is a black pawn
-					if ((tempPiece.getPieceColor() == "B") && (tempPiece.getPieceType() == "P"))
+					if ((tempPiece.getPieceColor().equals("B")) && (tempPiece.getPieceType().equals("P")))
 					{
 						pic.setIcon(new ImageIcon("blackPawn.png"));
 					}
 					//if the piece is a black rook
-					if ((tempPiece.getPieceColor() == "B") && (tempPiece.getPieceType() == "R"))
+					if ((tempPiece.getPieceColor().equals("B")) && (tempPiece.getPieceType().equals("R")))
 					{
 						pic.setIcon(new ImageIcon("blackRook.png"));
 					}
 					//if the piece is a white rook
-					if ((tempPiece.getPieceColor() == "W") && (tempPiece.getPieceType() == "R"))
+					if ((tempPiece.getPieceColor().equals("W")) && (tempPiece.getPieceType().equals("R")))
 					{
 						pic.setIcon(new ImageIcon("whiteRook.png"));
 					}
 					//if the piece is a white knight
-					if ((tempPiece.getPieceColor() == "W") && (tempPiece.getPieceType() == "H"))
+					if ((tempPiece.getPieceColor().equals("W")) && (tempPiece.getPieceType().equals("H")))
 					{
 						pic.setIcon(new ImageIcon("whiteKnight.png"));
 					}
 					//if the piece is a black knight
-					if ((tempPiece.getPieceColor() == "B") && (tempPiece.getPieceType() == "H"))
+					if ((tempPiece.getPieceColor().equals("B")) && (tempPiece.getPieceType().equals("H")))
 					{
 						pic.setIcon(new ImageIcon("blackKnight.png"));
 					}
 					//if the piece is a white bishop
-					if ((tempPiece.getPieceColor() == "W") && (tempPiece.getPieceType() == "B"))
+					if ((tempPiece.getPieceColor().equals("W")) && (tempPiece.getPieceType().equals("B")))
 					{
 						pic.setIcon(new ImageIcon("whiteBishop.png"));
 					}
 					//if the piece is a black bishop
-					if ((tempPiece.getPieceColor() == "B") && (tempPiece.getPieceType() == "B"))
+					if ((tempPiece.getPieceColor().equals("B")) && (tempPiece.getPieceType().equals("B")))
 					{
 						pic.setIcon(new ImageIcon("blackBishop.png"));
 					}
 					//if the piece is a white queen
-					if ((tempPiece.getPieceColor() == "W") && (tempPiece.getPieceType() == "Q"))
+					if ((tempPiece.getPieceColor().equals("W")) && (tempPiece.getPieceType().equals("Q")))
 					{
 						pic.setIcon(new ImageIcon("whiteQueen.png"));
 					}
 						//if the piece is a black queen
-					if ((tempPiece.getPieceColor() == "B") && (tempPiece.getPieceType() == "Q"))
+					if ((tempPiece.getPieceColor().equals("B")) && (tempPiece.getPieceType().equals("Q")))
 					{
 						pic.setIcon(new ImageIcon("blackQueen.png"));
 					}
 					//if the piece is a white king
-					if ((tempPiece.getPieceColor() == "W") && (tempPiece.getPieceType() == "K"))
+					if ((tempPiece.getPieceColor().equals("W")) && (tempPiece.getPieceType().equals("K")))
 					{
 						pic.setIcon(new ImageIcon("whiteKing.png"));
 					}
 					//if the piece is a black king
-					if ((tempPiece.getPieceColor() == "B") && (tempPiece.getPieceType() == "K"))
+					if ((tempPiece.getPieceColor().equals("B")) && (tempPiece.getPieceType().equals("K")))
 					{
 						pic.setIcon(new ImageIcon("blackKing.png"));
 					}
@@ -590,7 +773,7 @@ public class Chess
 			}
 		}
 
-		//method for adding coordinate over the board for debugging
+		//method for adding coordinates over the board for debugging
 		public void addCord(Board gameBoard)
 		{
 			for (int i = 0; i < 8; i++)
