@@ -44,6 +44,8 @@ public class Chess
 		engine.addBoard(board1);
 		engine.resetVisible();
 		//board1.printCords();
+		engine.whitesTurn();
+		engine.resetVisible();
 		
 	}
 
@@ -363,9 +365,16 @@ public class Chess
 		//a copy of board1
 		Board board = new Board();
 		//gui elements for rendering engine
-		JTextField startingInput = new JTextField();
-		JTextField endingInput = new JTextField();
-		JButton moveButton = new JButton("Make Move");
+		JLabel startingInputLetterLabel = new JLabel("Letter");
+		JLabel startingInputNumberLabel = new JLabel("Number");
+		JLabel endingInputLetterLabel = new JLabel("Letter");
+		JLabel endingInputNumberLabel = new JLabel("Number");
+		JLabel to = new JLabel("To");
+		JTextField startingInputLetter = new JTextField();
+		JTextField startingInputNumber = new JTextField();
+		JTextField endingInputLetter = new JTextField();
+		JTextField endingInputNumber = new JTextField();
+		JButton moveButton = new JButton("Move");
 		//the constructor
 		public RenderingEngine()
 		{
@@ -377,15 +386,51 @@ public class Chess
 			setLayout(null);
 			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			//set up gui elements
-
+			startingInputLetter.setBounds(100, 575, 50, 22);
+			startingInputNumber.setBounds(175, 575, 50, 22);
+			startingInputLetterLabel.setBounds(100, 550, 50, 22);
+			startingInputNumberLabel.setBounds(175, 550, 55, 22);
+			endingInputLetter.setBounds(300, 575, 50, 22);
+			endingInputNumber.setBounds(375, 575, 50, 22);
+			endingInputLetterLabel.setBounds(300, 550, 50, 22);
+			endingInputNumberLabel.setBounds(375, 550, 55, 22);
+			to.setBounds(250, 575, 20, 22);
+			moveButton.setBounds(425, 575, 75, 22);
 			//add elements
-			add(startingInput);
-			add(endingInput);
+			add(startingInputLetter);
+			add(endingInputLetter);
+			add(startingInputNumber);
+			add(endingInputNumber);
 			add(moveButton);
+			add(startingInputLetterLabel);
+			add(startingInputNumberLabel);
+			add(endingInputLetterLabel);
+			add(endingInputNumberLabel);
+			add(to);
 			//set attributes (action listener)
 
 			//set visible
 			setVisible(true);
+		}
+
+		//methods to show whites turn banner
+		public void whitesTurn()
+		{
+			JLabel pic = new JLabel();
+			pic.setIcon(new ImageIcon("whitesTurn.png"));
+			Dimension size = pic.getPreferredSize();
+			pic.setBounds(100, 25, size.width, size.height);
+			add(pic);
+		}
+
+		//metjod to show blacks turn banner
+		public void blacksTurn()
+		{
+			JLabel pic = new JLabel();
+			pic.setIcon(new ImageIcon("blacksTurn.png"));
+			Dimension size = pic.getPreferredSize();
+			pic.setBounds(100, 25, size.width, size.height);
+			add(pic);
 		}
 
 		//method for fixing visibility errors
