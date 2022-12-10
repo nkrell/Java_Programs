@@ -28,38 +28,28 @@ public class Chess
 	public Chess()
 	{
 		//all the subclasses are initialized here
-		Board board1 = new Board();
-		RenderingEngine engine = new RenderingEngine();
-		board1.setBoard();
-		board1.printBoard();
+		
+		GameEngine gameEngine = new GameEngine();
+		new Thread(gameEngine).start();
+		
+		//board1.setBoard();
+		//board1.printBoard();
 		//
-		board1.printBoardColors();
-		board1.attributes(1,6);
+		//board1.printBoardColors();
+		//board1.attributes(1,6);
 		
-		engine.resetVisible();
-		engine.addCordTiles();
-		engine.addCord(board1);
-		engine.addPieces(board1);
-		engine.addBoard(board1);
-		engine.resetVisible();
+		//engine.resetVisible();
+		//engine.addCordTiles();
+		//engine.addCord(board1);
+		//engine.addPieces(board1);
+		//engine.addBoard(board1);
+		//engine.resetVisible();
 		//board1.printCords();
-		engine.whitesTurn();
-		engine.resetVisible();
+		//engine.whitesTurn();
+		//engine.resetVisible();
 
 
 		
-	}
-
-	// describes the behavior of peices that move in stright lines
-	private abstract class LinearPeice
-	{
-
-	}
-
-	//describes the behaviour of pawns and knights
-	private abstract class NonLinearPeice
-	{
-
 	}
 
 	//the main method
@@ -67,6 +57,71 @@ public class Chess
 	{
 		//this starts the program
 		Chess newGame = new Chess();
+	}
+
+	private class GameEngine implements Runnable
+	{
+		Board board;
+		RenderingEngine renderingEngine;
+		//the constructor
+		public GameEngine()
+		{
+			board = new Board();
+			renderingEngine = new RenderingEngine();
+			board.setBoard();
+			board.printBoard();
+			renderingEngine.resetVisible();
+			
+			renderingEngine.addPieces(board);
+			renderingEngine.addBoard(board);
+			renderingEngine.addCordTiles();
+			renderingEngine.resetVisible();
+			renderingEngine.boardUpdate(board);
+		}
+
+		public void run()
+		{	
+
+			//allows thread to sleep
+			try 
+			{
+				while(true)
+				{
+					//check if game over
+					if (renderingEngine.gameOver())
+					{
+						break;
+					}
+
+					//check if move made
+					if (renderingEngine.moveMade())
+					{
+						//update board
+						
+						renderingEngine.reset();
+						board = renderingEngine.returnBoard();
+						renderingEngine.boardUpdate(board);
+						//re-render board
+						//renderingEngine.addCordTiles();
+						//renderingEngine.addPieces(board);
+						//renderingEngine.addBoard(board);
+						renderingEngine.moveMadeReset();
+						//for debugging
+						board.printBoard();
+					}
+
+					//make sure board is properly rendered
+					//renderingEngine.resetVisible();
+
+					//wait
+					Thread.sleep(250);
+				}
+			}
+			catch (Exception e) 
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 
 	//the board class
@@ -380,6 +435,8 @@ public class Chess
 	{
 		//tracks if the game is over or if it has been canceld
 		boolean gameOver = false;
+		//trakcs if a move was made
+		boolean moveMade = false;
 		//a copy of board1
 		Board board = new Board();
 		//gui elements for rendering engine
@@ -441,13 +498,13 @@ public class Chess
 			add(resetButton);
 			add(scrollPane);
 			//set attributes (action listener)
-
+			moveButton.addActionListener(new moveButtonPress());
 			//set visible
 			setVisible(true);
 		}
 
 		//defines the behavior of the move button
-		private class moveButton implements ActionListener
+		private class moveButtonPress implements ActionListener
 		{
 			public void actionPerformed(ActionEvent arg0)
 			{
@@ -496,6 +553,10 @@ public class Chess
 				int startY = vConvert(startingNumber);
 				int endX = hConvert(endingLetter);
 				int endY = vConvert(endingNumber);
+				output(Integer.toString(startX));
+				output(Integer.toString(startY));
+				output(Integer.toString(endX));
+				output(Integer.toString(endY));
 				if (board.getBoardState(startX, startY).getPieceColor().equals("W"))
 				{
 					if(whosTurn.equals("Black"))
@@ -520,6 +581,19 @@ public class Chess
 				if (goodInput)
 				{
 					board.move(startX, startY, endX, endY);
+					moveMade = true;
+					output("Move Made");
+					//change turn
+					if (whosTurn.equals("White"))
+					{
+						whosTurn = "Black";
+						output("Black's Turn");
+					}
+					else  
+					{
+						whosTurn = "White";
+						output("White's Turn");
+					}
 				}
 
 
@@ -554,15 +628,36 @@ public class Chess
 			}
 		}
 
+		//method to check is a move has been made by the user
+		public boolean moveMade()
+		{
+			return(moveMade);
+		}
+
+		//method to check if game is over or canceled
+		public boolean gameOver()
+		{
+			return(gameOver);
+		}
+
+		//method to reset moveMade
+		public void moveMadeReset()
+		{
+			this.moveMade = false;
+			output("MoveMade reset");
+		}
+
 		//method to update RenderingEngine's copy of the board
 		public void boardUpdate(Board newBoard)
 		{
 			this.board = newBoard;
+			output("boardUpdate run");
 		}
 
 		//method to return RenderingEngines copy of the board
 		public Board returnBoard()
 		{
+			output("returnBoard run");
 			return(this.board);
 		}
 
@@ -576,8 +671,7 @@ public class Chess
 		//method to convert vertical coordinate system
 		public int vConvert(int chessCord)
 		{	
-			//this is a dumb way of doing this but it helps me rember whats going on
-			int myCord = ((8 - chessCord) * (1 - 2));
+			int myCord = ((8 - chessCord));
 			return(myCord);
 		}
 
@@ -627,6 +721,7 @@ public class Chess
 		//method for resetting Jframe
 		public void reset()
 		{
+			output("reset run");
 			removeAll();
 		}
 
