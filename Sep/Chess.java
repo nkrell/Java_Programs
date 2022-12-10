@@ -38,6 +38,7 @@ public class Chess
 		board1.attributes(1,6);
 		
 		engine.resetVisible();
+		engine.addCordTiles();
 		engine.addCord(board1);
 		engine.addPieces(board1);
 		engine.addBoard(board1);
@@ -362,7 +363,9 @@ public class Chess
 		//a copy of board1
 		Board board = new Board();
 		//gui elements for rendering engine
-
+		JTextField startingInput = new JTextField();
+		JTextField endingInput = new JTextField();
+		JButton moveButton = new JButton("Make Move");
 		//the constructor
 		public RenderingEngine()
 		{
@@ -373,6 +376,14 @@ public class Chess
 			setLocationRelativeTo(null);
 			setLayout(null);
 			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			//set up gui elements
+
+			//add elements
+			add(startingInput);
+			add(endingInput);
+			add(moveButton);
+			//set attributes (action listener)
+
 			//set visible
 			setVisible(true);
 		}
@@ -389,6 +400,37 @@ public class Chess
 		public void reset()
 		{
 			removeAll();
+		}
+
+		//method for adding the coordinate tiles to the edge of the board
+		public void addCordTiles()
+		{	
+			//list of letters for easy indexing
+			String[] letterList = {"A", "B", "C", "D", "E", "F", "G", "H"};
+			//adds verticel tiles
+			for (int i = 0; i < 8; i++)
+			{
+				JLabel pic = new JLabel();
+				JLabel number = new JLabel(Integer.toString((i + 1 - 9) * (1 - 2) ));
+				pic.setIcon(new ImageIcon("cordTile.png"));
+				Dimension size = pic.getPreferredSize();
+				pic.setBounds(75, (i + 2) * 50, size.width, size.height);
+				number.setBounds(85, (i + 2) * 50, size.width, size.height);
+				add(number);
+				add(pic);
+			}
+			//adds horizontal tiles
+			for (int i = 0; i < 8; i++)
+			{
+				JLabel pic = new JLabel();
+				JLabel letter = new JLabel(letterList[i]);
+				pic.setIcon(new ImageIcon("cordTile2.png"));
+				Dimension size = pic.getPreferredSize();
+				pic.setBounds((i + 2) * 50, 500 , size.width, size.height);
+				letter.setBounds(((i + 2) * 50) + 20, 500 , size.width, size.height);
+				add(letter);
+				add(pic);
+			}
 		}
 
 		//method for adding board
@@ -503,7 +545,7 @@ public class Chess
 			}
 		}
 
-		//method for adding coordinate ove the board for debugging
+		//method for adding coordinate over the board for debugging
 		public void addCord(Board gameBoard)
 		{
 			for (int i = 0; i < 8; i++)
