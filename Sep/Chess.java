@@ -49,11 +49,14 @@ public class Chess
 		public GameEngine()
 		{
 			board = new Board();
+
 			renderingEngine = new RenderingEngine();
 			board.setBoard();
 			board.printBoard();
 			renderingEngine.rePaintPanel(board);
 			renderingEngine.boardUpdate(board);
+			renderingEngine.output("Game Started");
+			renderingEngine.output("White's turn");
 		}
 
 		public void run()
@@ -67,7 +70,23 @@ public class Chess
 					//check if game over
 					if (renderingEngine.gameOver())
 					{
-						break;
+						//break;
+
+					}
+
+					//check if game reset
+					if(renderingEngine.gameReset())
+					{
+						//reset board
+						board.setBoard();
+						//pass board to rendering engine
+						renderingEngine.boardUpdate(board);
+						board = renderingEngine.returnBoard();
+						//repaint graphics
+						board.printBoard();
+						renderingEngine.rePaintPanel(board);
+						//reset reset
+						renderingEngine.resetReset();
 					}
 
 					//check if move was made
@@ -148,6 +167,27 @@ public class Chess
 			//move the piece to its new space
 			gameBoard[endX][endY].setState(movingPiece);
 
+		}
+
+		//method to check is the king was taken
+		//must specify which color king you are checking for
+		//returns true if king was found, false if not
+		public boolean kingFound(String color)
+		{
+			for (int i = 0; i < 8; i++)
+			{
+				for (int j = 0; j < 8; j++)
+				{
+					Piece pieceHolder = gameBoard[i][j].getState();
+					String typeHolder = pieceHolder.getPieceType();
+					String colorHolder = pieceHolder.getPieceColor();
+					if ((typeHolder.equals("K")) && (colorHolder.equals(color)))
+					{
+						return(true);
+					}
+				}
+			}
+			return(false);
 		}
 
 		//method for printing out a simple version of the board as it would appere in the gui
@@ -241,6 +281,8 @@ public class Chess
 		//method to set the board when starting a new game
 		public void setBoard()
 		{
+			//emptySpace
+			Piece emptySpace = new Piece("U", "U");
 			//pawn
 			Piece whitePawn = new Piece("W", "P");
 			Piece blackPawn = new Piece("B", "P");
@@ -259,6 +301,14 @@ public class Chess
 			//King
 			Piece whiteKing = new Piece("W", "K");
 			Piece blackKing = new Piece("B", "K");
+			//fill board with emptySpaces in case it is being reset
+			for(int i = 0; i < 8; i++)
+			{
+				for(int j = 0; j < 8; j++)
+				{
+					gameBoard[i][j].setState(emptySpace);
+				}
+			}
 			//set pawn rows
 			for (int i = 0; i < 8; i++)
 			{
@@ -285,6 +335,7 @@ public class Chess
 			gameBoard[4][7].setState(blackKing);
 			gameBoard[3][0].setState(whiteQueen);
 			gameBoard[4][0].setState(whiteKing);
+
 
 		}
 
@@ -405,8 +456,10 @@ public class Chess
 	//this class handles setting up the gui and updating it
 	private class RenderingEngine extends JFrame
 	{
-		//tracks if the game is over or if it has been canceld
+		//tracks if the game is over 
 		boolean gameOver = false;
+		//tracks if the game has been reset
+		boolean gameReset = false;
 		//trakcs if a move was made
 		boolean moveMade = false;
 		//a copy of board1
@@ -475,14 +528,41 @@ public class Chess
 			add(panel);
 			//set attributes (action listener)
 			moveButton.addActionListener(new moveButtonPress());
+			resetButton.addActionListener(new resetButtonPress());
+			concedeButton.addActionListener(new concedeButtonPress());
 			//set visible
 			setVisible(true);
 		}
 
 		//defines the behavior of the reset button
+		private class resetButtonPress implements ActionListener
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				output("Game Reset");
+				whosTurn = "W";
+				gameReset = true;
+			}
+		}
 
 		//defines the behaviour of the concede button
-		//private class 
+		private class concedeButtonPress implements ActionListener
+		{
+			public void actionPerformed(ActionEvent arg0)
+			{
+				if(whosTurn.equals("W"))
+				{
+					output("Black Wins");
+					winBanner("B");
+
+				}
+				else 
+				{
+					output("White Wins");
+					winBanner("W");
+				}
+			}
+		}
 
 		//defines the behavior of the move button
 		private class moveButtonPress implements ActionListener
@@ -534,13 +614,13 @@ public class Chess
 				int startY = vConvert(startingNumber);
 				int endX = hConvert(endingLetter);
 				int endY = vConvert(endingNumber);
-				output(Integer.toString(startX));
-				output(Integer.toString(startY));
-				output(Integer.toString(endX));
-				output(Integer.toString(endY));
+				//output(Integer.toString(startX));
+				//output(Integer.toString(startY));
+				//output(Integer.toString(endX));
+				//output(Integer.toString(endY));
 				//get moving peice color
 				String movingPieceColor = board.getBoardState(startX, startY).getPieceColor();
-				output(movingPieceColor);
+				//output(movingPieceColor);
 				if (!(movingPieceColor.equals(whosTurn)))
 				{
 					output("You are trying to move the other players pieces");
@@ -556,23 +636,39 @@ public class Chess
 					board.move(startX, startY, endX, endY);
 					moveMade = true;
 					output("Move Made");
-					//change turn
-					if (whosTurn.equals("W"))
+					//check if king was taken
+					if (!(board.kingFound("W")))
 					{
-						whosTurn = "B";
-						output("Black's Turn");
+						output("Black Wins");
+						winBanner("B");
+						gameOver = true;
 					}
-					else  
+					else if (!(board.kingFound("B")))
 					{
-						whosTurn = "W";
-						output("White's Turn");
+						output("White Wins");
+						winBanner("W");
+						gameOver = true;
 					}
-
+					if (!(gameOver))
+					{
+						//change turn
+						if (whosTurn.equals("W"))
+						{
+							whosTurn = "B";
+							output("Black's Turn");
+						}
+						else  
+						{
+							whosTurn = "W";
+							output("White's Turn");
+						}
+					}
 					//reset input fields
 					startingInputLetter.setText("");
 					startingInputNumber.setText("");
 					endingInputLetter.setText("");
 					endingInputNumber.setText("");
+
 				}
 
 
@@ -622,12 +718,15 @@ public class Chess
 			{
 				blacksTurn();
 			}
+			addCordTiles();
+			//addCord(newBoard);
 			addPieces(newBoard);
 			addBoard(newBoard);
-			addCordTiles();
 			revalidate();
 			repaint();
 		}
+
+
 
 		//method to check is a move has been made by the user
 		public boolean moveMade()
@@ -635,30 +734,42 @@ public class Chess
 			return(moveMade);
 		}
 
-		//method to check if game is over or canceled
+		//method to check if game is over 
 		public boolean gameOver()
 		{
 			return(gameOver);
+		}
+
+		//method to check if the game has been reset
+		public boolean gameReset()
+		{
+			return(gameReset);
+		}
+
+		//method to reset the reset variable
+		public void resetReset()
+		{
+			this.gameReset = false;
 		}
 
 		//method to reset moveMade
 		public void moveMadeReset()
 		{
 			this.moveMade = false;
-			output("MoveMade reset");
+			//output("MoveMade reset");
 		}
 
 		//method to update RenderingEngine's copy of the board
 		public void boardUpdate(Board newBoard)
 		{
 			this.board = newBoard;
-			output("boardUpdate run");
+			//output("boardUpdate run");
 		}
 
 		//method to return RenderingEngines copy of the board
 		public Board returnBoard()
 		{
-			output("returnBoard run");
+			//output("returnBoard run");
 			return(this.board);
 		}
 
@@ -706,6 +817,32 @@ public class Chess
 		{
 			JLabel pic = new JLabel();
 			pic.setIcon(new ImageIcon("blacksTurn.png"));
+			Dimension size = pic.getPreferredSize();
+			pic.setBounds(100, 25, size.width, size.height);
+			panel.add(pic);
+		}
+
+		//method to show win banner
+		public void winBanner(String winner)
+		{
+			Board newBoard = this.board;
+			//repaint whole panel
+			panel.removeAll();
+			addCordTiles();
+			addPieces(newBoard);
+			addBoard(newBoard);
+			revalidate();
+			repaint();
+			//choose and display win banner
+			JLabel pic = new JLabel();
+			if (winner.equals("W"))
+			{
+				pic.setIcon(new ImageIcon("whiteWins.png"));
+			}
+			else  
+			{
+				pic.setIcon(new ImageIcon("blackWins.png"));
+			}
 			Dimension size = pic.getPreferredSize();
 			pic.setBounds(100, 25, size.width, size.height);
 			panel.add(pic);
@@ -881,7 +1018,7 @@ public class Chess
 					String label = (Integer.toString(x) + ", " + Integer.toString(y));
 					JLabel cord = new JLabel(label);
 					cord.setBounds((j + 2) * 50, (i + 2) * 50, 50, 50);
-					add(cord);
+					panel.add(cord);
 				}
 			}
 		}
