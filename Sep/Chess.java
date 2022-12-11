@@ -31,25 +31,7 @@ public class Chess
 		
 		GameEngine gameEngine = new GameEngine();
 		new Thread(gameEngine).start();
-		
-		//board1.setBoard();
-		//board1.printBoard();
-		//
-		//board1.printBoardColors();
-		//board1.attributes(1,6);
-		
-		//engine.resetVisible();
-		//engine.addCordTiles();
-		//engine.addCord(board1);
-		//engine.addPieces(board1);
-		//engine.addBoard(board1);
-		//engine.resetVisible();
-		//board1.printCords();
-		//engine.whitesTurn();
-		//engine.resetVisible();
 
-
-		
 	}
 
 	//the main method
@@ -70,12 +52,7 @@ public class Chess
 			renderingEngine = new RenderingEngine();
 			board.setBoard();
 			board.printBoard();
-			renderingEngine.resetVisible();
-			
-			renderingEngine.addPieces(board);
-			renderingEngine.addBoard(board);
-			renderingEngine.addCordTiles();
-			renderingEngine.resetVisible();
+			renderingEngine.rePaintPanel(board);
 			renderingEngine.boardUpdate(board);
 		}
 
@@ -93,25 +70,20 @@ public class Chess
 						break;
 					}
 
-					//check if move made
+					//check if move was made
 					if (renderingEngine.moveMade())
 					{
 						//update board
-						
-						renderingEngine.reset();
 						board = renderingEngine.returnBoard();
 						renderingEngine.boardUpdate(board);
-						//re-render board
-						//renderingEngine.addCordTiles();
-						//renderingEngine.addPieces(board);
-						//renderingEngine.addBoard(board);
-						renderingEngine.moveMadeReset();
-						//for debugging
 						board.printBoard();
+						renderingEngine.rePaintPanel(board);
+						//reset turn
+						renderingEngine.moveMadeReset();
 					}
 
 					//make sure board is properly rendered
-					//renderingEngine.resetVisible();
+					renderingEngine.resetVisible();
 
 					//wait
 					Thread.sleep(250);
@@ -454,6 +426,7 @@ public class Chess
 		JButton resetButton = new JButton("Reset");
 		JScrollPane scrollPane;
 		JTextArea outputPane;
+		JPanel panel = new JPanel();
 		//variable to keep track of whos turn it is
 		String whosTurn = "White";
 		//the constructor
@@ -462,7 +435,7 @@ public class Chess
 			
 			super("Chess");
 			//setting up basic window attributes
-			setSize(1366, 768);
+			setSize(1920, 1080);
 			setLocationRelativeTo(null);
 			setLayout(null);
 			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -483,6 +456,8 @@ public class Chess
 			moveButton.setBounds(425, 575, 75, 22);
 			concedeButton.setBounds(525, 100, 100, 22);
 			resetButton.setBounds(627, 100, 100, 22);
+			panel.setBounds(0, 0, 500, 550); //--------------------------------------------------------Panel
+			panel.setLayout(null);
 			//add elements
 			add(startingInputLetter);
 			add(endingInputLetter);
@@ -497,6 +472,7 @@ public class Chess
 			add(concedeButton);
 			add(resetButton);
 			add(scrollPane);
+			add(panel);
 			//set attributes (action listener)
 			moveButton.addActionListener(new moveButtonPress());
 			//set visible
@@ -628,6 +604,18 @@ public class Chess
 			}
 		}
 
+		//method to paint JPanel over the board
+		public void rePaintPanel(Board newBoard)
+		{
+			//repaint whole panel using updated board
+			panel.removeAll();
+			addPieces(newBoard);
+			addBoard(newBoard);
+			addCordTiles();
+			revalidate();
+			repaint();
+		}
+
 		//method to check is a move has been made by the user
 		public boolean moveMade()
 		{
@@ -721,8 +709,8 @@ public class Chess
 		//method for resetting Jframe
 		public void reset()
 		{
-			output("reset run");
-			removeAll();
+			//output("reset run");
+			//getContentPane().removeAll();
 		}
 
 		//method for adding the coordinate tiles to the edge of the board
@@ -739,8 +727,8 @@ public class Chess
 				Dimension size = pic.getPreferredSize();
 				pic.setBounds(75, (i + 2) * 50, size.width, size.height);
 				number.setBounds(85, (i + 2) * 50, size.width, size.height);
-				add(number);
-				add(pic);
+				panel.add(number);
+				panel.add(pic);
 			}
 			//adds horizontal tiles
 			for (int i = 0; i < 8; i++)
@@ -751,8 +739,8 @@ public class Chess
 				Dimension size = pic.getPreferredSize();
 				pic.setBounds((i + 2) * 50, 500 , size.width, size.height);
 				letter.setBounds(((i + 2) * 50) + 20, 500 , size.width, size.height);
-				add(letter);
-				add(pic);
+				panel.add(letter);
+				panel.add(pic);
 			}
 		}
 
@@ -777,7 +765,7 @@ public class Chess
 					Dimension size = pic.getPreferredSize();
 					//place pic in proper spot
 					pic.setBounds((j + 2) * 50, (i + 2) * 50, size.width, size.height);
-					add(pic);
+					panel.add(pic);
 				}
 			}
 		}
@@ -863,7 +851,7 @@ public class Chess
 					Dimension size = pic.getPreferredSize();
 					//place pic in proper spot
 					pic.setBounds((j + 2) * 50, (i + 2) * 50, size.width, size.height);
-					add(pic);
+					panel.add(pic);
 				}
 			}
 		}
