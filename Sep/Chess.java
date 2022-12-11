@@ -428,7 +428,7 @@ public class Chess
 		JTextArea outputPane;
 		JPanel panel = new JPanel();
 		//variable to keep track of whos turn it is
-		String whosTurn = "White";
+		String whosTurn = "W";
 		//the constructor
 		public RenderingEngine()
 		{
@@ -443,7 +443,7 @@ public class Chess
 			outputPane = new JTextArea(10, 10);
 			scrollPane = new JScrollPane(outputPane);
 			scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-			scrollPane.setBounds(525, 150, 200, 375);
+			scrollPane.setBounds(525, 150, 400, 375);
 			startingInputLetter.setBounds(100, 575, 50, 22);
 			startingInputNumber.setBounds(175, 575, 50, 22);
 			startingInputLetterLabel.setBounds(100, 550, 50, 22);
@@ -478,6 +478,11 @@ public class Chess
 			//set visible
 			setVisible(true);
 		}
+
+		//defines the behavior of the reset button
+
+		//defines the behaviour of the concede button
+		//private class 
 
 		//defines the behavior of the move button
 		private class moveButtonPress implements ActionListener
@@ -533,21 +538,13 @@ public class Chess
 				output(Integer.toString(startY));
 				output(Integer.toString(endX));
 				output(Integer.toString(endY));
-				if (board.getBoardState(startX, startY).getPieceColor().equals("W"))
+				//get moving peice color
+				String movingPieceColor = board.getBoardState(startX, startY).getPieceColor();
+				output(movingPieceColor);
+				if (!(movingPieceColor.equals(whosTurn)))
 				{
-					if(whosTurn.equals("Black"))
-					{
-						goodInput = false;
-						output("You are trying to move a white piece during black's turn");
-					}
-				}
-				else if (board.getBoardState(startX, startY).getPieceColor().equals("B"))
-				{
-					if(whosTurn.equals("White"))
-					{
-						goodInput = false;
-						output("You are trying to move a black piece during white's turn");
-					}
+					output("You are trying to move the other players pieces");
+					goodInput = false;
 				}
 				//check if move is legal (coming soon)------------------------------------------------------------------------
 
@@ -560,17 +557,25 @@ public class Chess
 					moveMade = true;
 					output("Move Made");
 					//change turn
-					if (whosTurn.equals("White"))
+					if (whosTurn.equals("W"))
 					{
-						whosTurn = "Black";
+						whosTurn = "B";
 						output("Black's Turn");
 					}
 					else  
 					{
-						whosTurn = "White";
+						whosTurn = "W";
 						output("White's Turn");
 					}
+
+					//reset input fields
+					startingInputLetter.setText("");
+					startingInputNumber.setText("");
+					endingInputLetter.setText("");
+					endingInputNumber.setText("");
 				}
+
+
 
 
 			}
@@ -609,6 +614,14 @@ public class Chess
 		{
 			//repaint whole panel using updated board
 			panel.removeAll();
+			if (whosTurn.equals("W"))
+			{
+				whitesTurn();
+			}
+			else  
+			{
+				blacksTurn();
+			}
 			addPieces(newBoard);
 			addBoard(newBoard);
 			addCordTiles();
@@ -685,7 +698,7 @@ public class Chess
 			pic.setIcon(new ImageIcon("whitesTurn.png"));
 			Dimension size = pic.getPreferredSize();
 			pic.setBounds(100, 25, size.width, size.height);
-			add(pic);
+			panel.add(pic);
 		}
 
 		//metjod to show blacks turn banner
@@ -695,7 +708,7 @@ public class Chess
 			pic.setIcon(new ImageIcon("blacksTurn.png"));
 			Dimension size = pic.getPreferredSize();
 			pic.setBounds(100, 25, size.width, size.height);
-			add(pic);
+			panel.add(pic);
 		}
 
 		//method for fixing visibility errors
