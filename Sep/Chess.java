@@ -1,3 +1,4 @@
+import java.lang.Math;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import javax.swing.*;
 import java.awt.*;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
 
 
 
@@ -199,9 +201,25 @@ public class Chess
 			//variable to hold the direction the peice is moving to simplify calculation
 			String direction = "";
 
-			//get the type of peice being moved
-			String movingPieceType = gameBoard[startX][startY].getState().getPieceType();
+			//differneces between positions
+			int yDiff = Math.abs(startY - endY);
+			int xDiff = Math.abs(startX - endX);
 
+			//get the type and color of peice being moved
+			String movingPieceType = gameBoard[startX][startY].getState().getPieceType();
+			String movingPieceColor = gameBoard[startX][startY].getState().getPieceColor();
+
+			//check that the piece is actually moving
+			if ((startX == endX) && (startY == endY))
+			{
+				return(false);
+			}
+			//check that you arent taking your own pieces
+			String targetColor = gameBoard[endX][endY].getState().getPieceColor();
+			if (targetColor.equals(movingPieceColor))
+			{
+				return(false);
+			}
 			//find the direction the piece is going
 			if ((startX == endX) && (startY > endY))
 			{
@@ -240,50 +258,244 @@ public class Chess
 			//if pawn
 			if (movingPieceType.equals("P"))
 			{
-
+				//pawns can only move towards the enemy
+				//String movingPieceColor = gameBoard[startX][startY].getState().getPieceColor(); 
+				if (movingPieceColor.equals("W"))
+				{
+					if ((direction.equals("N")) || (direction.equals("NE")) || (direction.equals("NW")))
+					{
+						System.out.println("263");
+						return(false);
+					}
+				}
+				else if (movingPieceColor.equals("B"))
+				{
+					if ((direction.equals("S")) || (direction.equals("SE")) || (direction.equals("SW")))
+					{
+						System.out.println("271");
+						return(false);
+					}
+				}
+				//pawns can only move diagonally to attack
+				if ((direction.equals("NW")) || (direction.equals("NE")) || (direction.equals("SW")) || (direction.equals("SE")))
+				{
+					String target = gameBoard[endX][endY].getState().getPieceType();
+					if (target.equals("U"))
+					{
+						System.out.println("281");
+						return(false);
+					}
+					//int yDiff = Math.abs(startY - endY);
+					if (yDiff != 1)
+					{
+						System.out.println("287");
+						return(false);
+					}
+				}
+				//pawns can only move 1 space unless its their first turn
+				if ((startY == 1) || (startY == 7))
+				{
+					//int yDiff = Math.abs(startY - endY);
+					if (!(yDiff <= 2))
+					{
+						System.out.println("297");
+						return(false);
+					}
+				}
+				else //if (!((startX == 1) || (startX == 7)))
+				{
+					//int yDiff = Math.abs(startY - endY);
+					if (yDiff != 1)
+					{
+						System.out.println("306");
+						return(false);
+					}
+				}
 			}
 			//if rook/castle
 			if (movingPieceType.equals("R"))
 			{
 				//check that the rook is going up, down, left, or right
-				if ((direction.equals("NE")) || (direction.equals("SE")) || (direction.equals("NW"))	|| (direction.equals("SW")))
+				if ((direction.equals("NE")) || (direction.equals("SE")) || (direction.equals("NW")) || (direction.equals("SW")))
 				{
 					return(false);
 				}	
-
 				//check that nothing is in the way
-
+				return(!(isBlocked(direction, startX, startY, endX, endY)));
 			}
 			//if knight/horse
 			if(movingPieceType.equals("H"))
 			{
-
+				//throw out any obviously impossible moves
+				if ((xDiff > 2) || (yDiff > 2))
+				{
+					//System.out.println("332");
+					return(false);
+				}
+				//thrwo out specifically impossible moves
+				if ((xDiff == 1) && (yDiff == 2))
+				{
+					//System.out.println("338");
+					//return(false);
+				}
+				else if ((xDiff == 2) && (yDiff == 1)) 
+				{
+					//System.out.println("343");
+					//return(false);
+				}
+				else  
+				{
+					return(false);
+				}
 			}
 			//if bishop
 			if (movingPieceType.equals("B"))
 			{
-
+				//check that the bishop is going diagonal
+				if ((direction.equals("N")) || (direction.equals("E")) || (direction.equals("W")) || (direction.equals("S")))
+				{
+					return(false);
+				}
+				//check that nothing is in the way
+				return(!(isBlocked(direction, startX, startY, endX, endY)));
 			}
 			//if queen
 			if (movingPieceType.equals("Q"))
 			{
-
+				//queen can move in any direction
+				//check that nothing is in the way
+				return(!(isBlocked(direction, startX, startY, endX, endY)));
 			}
 			//if king
 			if (movingPieceType.equals("K"))
 			{
-
+				//king can move in any direction
+				//king can only move one space
+				//int xDiff = Math.abs(startX - endX);
+				//int yDiff = Math.abs(startY - endY);
+				if ((xDiff > 1) || (yDiff > 1))
+				{
+					return(false);
+				}
+				//kingmate checker will go here--------------------------------------------
 			}
-			//return whetehr move was found to be illegal
-			return(legalMove);
+			//return whether move was found to be illegal
+			return(true);
 		}
 
-		//method for checking if the king is in check
+		
+
+		//method for checking if the king is in check-----------------------------------------
 
 		//method for checking if a piece is in the way
 		public boolean isBlocked(String direction, int startX, int startY, int endX, int endY)
 		{
-
+			String type = "";
+			if (direction.equals("N"))
+			{
+				for (int i = startY -1; i > endY; i--)
+				{
+					type = gameBoard[startX][i].getState().getPieceType();
+					if(!(type.equals("U")))
+					{
+						return(true);
+					}
+				}
+			}
+			else if (direction.equals("S")) 
+			{
+				for (int i = startY +1; i < endY; i++)
+				{
+					type = gameBoard[startX][i].getState().getPieceType();
+					if(!(type.equals("U")))
+					{
+						return(true);
+					}
+				}
+			}
+			else if (direction.equals("E")) 
+			{
+				for (int i = startX +1; i < endX; i++)
+				{
+					type = gameBoard[i][startY].getState().getPieceType();
+					if(!(type.equals("U")))
+					{
+						return(true);
+					}
+				}
+			}
+			else if (direction.equals("W")) 
+			{
+				for (int i = startX -1; i > endX; i--)
+				{
+					type = gameBoard[i][startY].getState().getPieceType();
+					if(!(type.equals("U")))
+					{
+						return(true);
+					}
+				}
+			}
+			else if (direction.equals("NE")) 
+			{
+				int i = startX + 1;
+				int j = startY - 1;
+				while ((i < endX) && (j > endY))
+				{
+					type = gameBoard[i][j].getState().getPieceType();
+					if (!(type.equals("U")))
+					{
+						return(true);
+					}
+					i++;
+					j--;
+				}
+			}
+			else if (direction.equals("SE")) 
+			{
+				int i = startX + 1;
+				int j = startY + 1;
+				while ((i < endX) && (j < endY))
+				{
+					type = gameBoard[i][j].getState().getPieceType();
+					if (!(type.equals("U")))
+					{
+						return(true);
+					}
+					i++;
+					j++;
+				}
+			}
+			else if (direction.equals("SW")) 
+			{
+				int i = startX - 1;
+				int j = startY + 1;
+				while ((i > endX) && (j < endY))
+				{
+					type = gameBoard[i][j].getState().getPieceType();
+					if (!(type.equals("U")))
+					{
+						return(true);
+					}
+					i--;
+					j++;
+				}
+			}
+			else if (direction.equals("NW")) 
+			{
+				int i = startX - 1;
+				int j = startY - 1;
+				while ((i > endX) && (j > endY))
+				{
+					type = gameBoard[i][j].getState().getPieceType();
+					if (!(type.equals("U")))
+					{
+						return(true);
+					}
+					i--;
+					j--;
+				}
+			}
+			return(false);
 		}
 
 		//method for printing out a simple version of the board as it would appere in the gui
@@ -408,28 +620,29 @@ public class Chess
 			//set pawn rows
 			for (int i = 0; i < 8; i++)
 			{
-				gameBoard[i][1].setState(whitePawn);
-				gameBoard[i][6].setState(blackPawn);
+				//gameBoard[i][1].setState(whitePawn);
+				//gameBoard[i][6].setState(blackPawn);
 			}
 			//set rooks
-			gameBoard[0][7].setState(blackRook);
-			gameBoard[7][7].setState(blackRook);
-			gameBoard[0][0].setState(whiteRook);
-			gameBoard[7][0].setState(whiteRook);
+			//gameBoard[0][7].setState(blackRook);
+			//gameBoard[7][7].setState(blackRook);
+			//gameBoard[0][0].setState(whiteRook);
+			//gameBoard[7][0].setState(whiteRook);
 			//set knights
-			gameBoard[6][7].setState(blackKnight);
-			gameBoard[1][7].setState(blackKnight);
-			gameBoard[1][0].setState(whiteKnight);
-			gameBoard[6][0].setState(whiteKnight);
+			gameBoard[4][4].setState(whiteKnight);
+			//gameBoard[6][7].setState(blackKnight);
+			//gameBoard[1][7].setState(blackKnight);
+			//gameBoard[1][0].setState(whiteKnight);
+			//gameBoard[6][0].setState(whiteKnight);
 			//set bishops
-			gameBoard[2][0].setState(whiteBishop);
-			gameBoard[5][0].setState(whiteBishop);
-			gameBoard[2][7].setState(blackBishop);
-			gameBoard[5][7].setState(blackBishop);
+			//gameBoard[2][0].setState(whiteBishop);
+			//gameBoard[5][0].setState(whiteBishop);
+			//gameBoard[2][7].setState(blackBishop);
+			//gameBoard[5][7].setState(blackBishop);
 			//set royals
-			gameBoard[3][7].setState(blackQueen);
+			//gameBoard[3][7].setState(blackQueen);
 			gameBoard[4][7].setState(blackKing);
-			gameBoard[3][0].setState(whiteQueen);
+			//gameBoard[3][0].setState(whiteQueen);
 			gameBoard[4][0].setState(whiteKing);
 
 
@@ -637,6 +850,11 @@ public class Chess
 			{
 				output("Game Reset");
 				whosTurn = "W";
+				//reset input fields
+				startingInputLetter.setText("");
+				startingInputNumber.setText("");
+				endingInputLetter.setText("");
+				endingInputNumber.setText("");
 				gameReset = true;
 			}
 		}
@@ -730,8 +948,17 @@ public class Chess
 					output("You are trying to move the other players pieces");
 					goodInput = false;
 				}
-				//check if move is legal (coming soon)------------------------------------------------------------------------
-
+				//check if move is legal (coming soon)----------------------------------------------------------------------------------------------
+				if (board.checkMove(startX, startY, endX, endY))
+				{
+					goodInput = true;
+				}
+				else
+				{
+					output("Invalid Move");
+					goodInput = false;
+				}
+				
 				//modify board
 				//this wont happen if the prerequisites above werent met
 				//in the higher method, the renderingengines copy of board will always be passed, wether a move has been made or not
@@ -823,7 +1050,7 @@ public class Chess
 				blacksTurn();
 			}
 			addCordTiles();
-			addCord(newBoard);
+			//addCord(newBoard);
 			addPieces(newBoard);
 			addBoard(newBoard);
 			revalidate();

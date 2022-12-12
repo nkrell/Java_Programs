@@ -39,6 +39,8 @@ public class test extends JFrame
 		System.out.println(dFinder(1, 1, 0, 1));
 		System.out.println("NW");
 		System.out.println(dFinder(1, 1, 0, 0));
+
+		printCords("N", 7, 7, 7, 1);
 	}
 
 	public static String dFinder(int startX, int startY, int endX, int endY)
@@ -79,5 +81,21 @@ public class test extends JFrame
 			direction = "SW";
 		}
 		return(direction);
+	}
+
+	public static void printCords(String direction, int startX, int startY, int endX, int endY)
+	{
+		System.out.println("Start X: " + Integer.toString(startX));
+		System.out.println("Start Y: " + Integer.toString(startY));
+		if (direction.equals("N"))
+		{
+			for (int i = startY; i > endY; i--)
+			{
+				System.out.println("X: " + Integer.toString(startX));
+				System.out.println("Y: " + Integer.toString(i));
+			}
+		}
+		System.out.println("End X: " + Integer.toString(endX));
+		System.out.println("End Y: " + Integer.toString(endY));
 	}
 }
