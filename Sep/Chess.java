@@ -190,6 +190,51 @@ public class Chess
 			return(false);
 		}
 
+		//method for checking is a given move is legal
+		//takes the start and ending position, this method occurs before the board is actually modified by the move, meaning the board is still in the unmoved state
+		public boolean checkMove(int startX, int startY, int endX, int endY)
+		{
+			//boolean to keep track of whehter the move have been determined to be illegal
+			boolean legalMove = true;
+			//get the type of peice being moved
+			String movingPieceType = gameBoard[startX][startY].getState().getPieceType();
+			//determine which rules apply
+			//if pawn
+			if (movingPieceType.equals("P"))
+			{
+				
+			}
+			//if rook/castle
+			if (movingPieceType.equals("R"))
+			{
+
+			}
+			//if knight/horse
+			if(movingPieceType.equals("H"))
+			{
+
+			}
+			//if bishop
+			if (movingPieceType.equals("B"))
+			{
+
+			}
+			//if queen
+			if (movingPieceType.equals("Q"))
+			{
+
+			}
+			//if king
+			if (movingPieceType.equals("K"))
+			{
+				
+			}
+			//return whetehr move was found to be illegal
+			return(legalMove);
+		}
+		//method for checking if the king is in check
+
+
 		//method for printing out a simple version of the board as it would appere in the gui
 		public void printBoard()
 		{
@@ -618,9 +663,17 @@ public class Chess
 				//output(Integer.toString(startY));
 				//output(Integer.toString(endX));
 				//output(Integer.toString(endY));
+				//get moving piece type
+				String movingPieceType = board.getBoardState(startX, startY).getPieceType();
+				//check that its actually a piece
+				if (movingPieceType.equals("U"))
+				{
+					output("There is no piece at the given starting coordinates");
+					goodInput = false;
+				}
 				//get moving peice color
 				String movingPieceColor = board.getBoardState(startX, startY).getPieceColor();
-				//output(movingPieceColor);
+				//check if the piece color mathes the turn color
 				if (!(movingPieceColor.equals(whosTurn)))
 				{
 					output("You are trying to move the other players pieces");
