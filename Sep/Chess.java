@@ -196,17 +196,62 @@ public class Chess
 		{
 			//boolean to keep track of whehter the move have been determined to be illegal
 			boolean legalMove = true;
+			//variable to hold the direction the peice is moving to simplify calculation
+			String direction = "";
+
 			//get the type of peice being moved
 			String movingPieceType = gameBoard[startX][startY].getState().getPieceType();
+
+			//find the direction the piece is going
+			if ((startX == endX) && (startY > endY))
+			{
+				direction = "N";
+			}
+			else if ((startX == endX) && (startY < endY)) 
+			{
+				direction = "S";
+			}
+			else if ((startY == endY) && (startX > endX)) 
+			{
+				direction = "W";
+			}
+			else if ((startY == endY) && (startX < endX)) 
+			{
+				direction = "E";
+			}
+			else if ((startX > endX) && (startY > endY)) 
+			{
+				direction = "NW";
+			}
+			else if ((startX < endX) && (startY < endY)) 
+			{
+				direction = "SE";
+			}
+			else if ((startX < endX) && (startY > endY)) 
+			{
+				direction = "NE";
+			}
+			else if ((startX > endX) && (startY < endY)) 
+			{
+				direction = "SW";
+			}
+
 			//determine which rules apply
 			//if pawn
 			if (movingPieceType.equals("P"))
 			{
-				
+
 			}
 			//if rook/castle
 			if (movingPieceType.equals("R"))
 			{
+				//check that the rook is going up, down, left, or right
+				if ((direction.equals("NE")) || (direction.equals("SE")) || (direction.equals("NW"))	|| (direction.equals("SW")))
+				{
+					return(false);
+				}	
+
+				//check that nothing is in the way
 
 			}
 			//if knight/horse
@@ -227,13 +272,19 @@ public class Chess
 			//if king
 			if (movingPieceType.equals("K"))
 			{
-				
+
 			}
 			//return whetehr move was found to be illegal
 			return(legalMove);
 		}
+
 		//method for checking if the king is in check
 
+		//method for checking if a piece is in the way
+		public boolean isBlocked(String direction, int startX, int startY, int endX, int endY)
+		{
+
+		}
 
 		//method for printing out a simple version of the board as it would appere in the gui
 		public void printBoard()
@@ -772,7 +823,7 @@ public class Chess
 				blacksTurn();
 			}
 			addCordTiles();
-			//addCord(newBoard);
+			addCord(newBoard);
 			addPieces(newBoard);
 			addBoard(newBoard);
 			revalidate();
