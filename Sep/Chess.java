@@ -620,29 +620,29 @@ public class Chess
 			//set pawn rows
 			for (int i = 0; i < 8; i++)
 			{
-				//gameBoard[i][1].setState(whitePawn);
-				//gameBoard[i][6].setState(blackPawn);
+				gameBoard[i][1].setState(whitePawn);
+				gameBoard[i][6].setState(blackPawn);
 			}
 			//set rooks
-			//gameBoard[0][7].setState(blackRook);
-			//gameBoard[7][7].setState(blackRook);
-			//gameBoard[0][0].setState(whiteRook);
-			//gameBoard[7][0].setState(whiteRook);
+			gameBoard[0][7].setState(blackRook);
+			gameBoard[7][7].setState(blackRook);
+			gameBoard[0][0].setState(whiteRook);
+			gameBoard[7][0].setState(whiteRook);
 			//set knights
-			gameBoard[4][4].setState(whiteKnight);
-			//gameBoard[6][7].setState(blackKnight);
-			//gameBoard[1][7].setState(blackKnight);
-			//gameBoard[1][0].setState(whiteKnight);
-			//gameBoard[6][0].setState(whiteKnight);
+			//gameBoard[4][4].setState(whiteKnight);
+			gameBoard[6][7].setState(blackKnight);
+			gameBoard[1][7].setState(blackKnight);
+			gameBoard[1][0].setState(whiteKnight);
+			gameBoard[6][0].setState(whiteKnight);
 			//set bishops
-			//gameBoard[2][0].setState(whiteBishop);
-			//gameBoard[5][0].setState(whiteBishop);
-			//gameBoard[2][7].setState(blackBishop);
-			//gameBoard[5][7].setState(blackBishop);
+			gameBoard[2][0].setState(whiteBishop);
+			gameBoard[5][0].setState(whiteBishop);
+			gameBoard[2][7].setState(blackBishop);
+			gameBoard[5][7].setState(blackBishop);
 			//set royals
-			//gameBoard[3][7].setState(blackQueen);
+			gameBoard[3][7].setState(blackQueen);
 			gameBoard[4][7].setState(blackKing);
-			//gameBoard[3][0].setState(whiteQueen);
+			gameBoard[3][0].setState(whiteQueen);
 			gameBoard[4][0].setState(whiteKing);
 
 
@@ -797,7 +797,8 @@ public class Chess
 			
 			super("Chess");
 			//setting up basic window attributes
-			setSize(1920, 1080);
+			//setSize(1920, 1080); //for big monitors
+			setSize(1000, 700); //for small monitors
 			setLocationRelativeTo(null);
 			setLayout(null);
 			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
