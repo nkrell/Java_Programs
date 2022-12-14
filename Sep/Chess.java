@@ -293,7 +293,7 @@ public class Chess
 					}
 				}
 				//pawns can only move 1 space unless its their first turn
-				if ((startY == 1) || (startY == 7))
+				if ((startY == 1) || (startY == 6))
 				{
 					//int yDiff = Math.abs(startY - endY);
 					if (!(yDiff <= 2))
